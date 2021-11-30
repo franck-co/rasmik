@@ -1,0 +1,110 @@
+import { FilterQuery , ReadOptions, Loaded,EntityClass, EntityOUT, RootEntity, PushDef} from './typings';
+
+
+interface RasmikErrorArgs {
+    message:string
+    messages?: string | string[]
+    usedDef?
+    usedWhere?
+    usedOptions?
+    pushData?
+}
+
+export class RasmikError extends Error {
+    constructor(error: RasmikErrorArgs) {
+        super(error.message)
+        Object.assign(this, error)
+    }
+
+    type?: string
+    messages?: string | string[]
+    usedDef?
+    usedWhere?
+    usedOptions?
+    pushData?
+}
+
+interface ClientConfig {
+    baseUrl: string
+    axios: any
+    onError: (err: Error) => void
+}
+
+
+const services = {
+   async getTeacherWithConciseLevels(){}
+}
+
+
+export class RasmikClient {
+
+    config: ClientConfig
+
+    constructor(config: ClientConfig) {
+        Object.assign(this.config, config)
+    }
+
+    services = services
+
+    async readOne<E extends RootEntity, P extends string = never>(entity:EntityClass<E>, where:FilterQuery<E>, options?:ReadOptions<E,P>):Promise<Loaded<E,P>> {
+        return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/readOne', {where,options})
+    }
+
+
+    async readMany<E extends RootEntity, P extends string = never>(entity:EntityClass<E>, where?:FilterQuery<E>, options?:ReadOptions<E,P>):Promise<Loaded<E,P>[]> {
+        return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/readMany', {where,options})
+    }
+
+
+    /** Le type obtenu doit être utilisé dans toutes les manipulations pour ne pas risquer de mauvais assignement */
+    getTypedEntityOUT<E extends RootEntity, PDef extends Readonly<PushDef<E>>>(entity?: EntityClass<E>, def?:PDef):[entityOUT:EntityOUT<E,PDef>, def:PDef]{
+        return undefined
+    }
+
+
+    async push<E extends RootEntity, PDef extends Readonly<PushDef<E>>, P extends string = never>(entity: EntityClass<E>, pushDef:PDef, data:EntityOUT<E,PDef>, readOptions?:ReadOptions<E,P> | false):  Promise<PDef extends false ? void : PDef['nodeType'] extends 'objects' ? Loaded<E,P>[]: Loaded<E,P>>{
+        return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/push', {pushDef,data, readOptions})
+    }
+
+    async deleteOne<E extends RootEntity, P extends string = never>(entity:EntityClass<E>, where:FilterQuery<E>, options?:ReadOptions<E,P>):Promise<Loaded<E,P>> {
+        return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/deleteOne', {where,options})
+    }
+
+
+    async deleteMany<E extends RootEntity, P extends string = never>(entity:EntityClass<E>, where?:FilterQuery<E>, options?:ReadOptions<E,P>):Promise<Loaded<E,P>[]> {
+        return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/deleteMany', {where,options})
+    }
+
+
+    private async request(url: string, payload?: any) {
+        try {
+
+            const res = await this.config.axios.post(url, payload,{  
+                headers: {
+                 // Overwrite Axios's automatically set Content-Type
+                'Content-Type': 'application/json'
+              }})
+            const data = res.data
+            return data
+        } catch (err) {
+
+            const serverError = err.response?.data
+            if (serverError?.error === true) {
+
+                const rethrown = new RasmikError({
+                    message:serverError.msg || serverError.message,
+                    messages: serverError.messages,
+                    usedDef: serverError.usedDef,
+                    usedOptions: serverError.usedOptions,
+                    usedWhere: serverError.usedWhere,
+                    pushData:payload.data
+                })
+
+                this.config.onError(rethrown)
+            }
+            else {
+                this.config.onError(err)
+            }
+        }
+    }
+}
