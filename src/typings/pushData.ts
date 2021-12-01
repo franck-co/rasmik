@@ -3,21 +3,21 @@ import { AllowProperty, PushDefNodeObject, PushDefNodeObjects, PushDefNodePk, Pu
 import { ExpandProperty } from '@mikro-orm/core/dist/typings'
 
 export type PushData<E extends RootEntity, Def extends PushDef<E>> 
-= Def['nodeType'] extends  'pks' | 'objects' ? Array<EntityOUTItem<E,Def>> : EntityOUTItem<E,Def>
+= Def['nodeType'] extends  'pks' | 'objects' ? Array<PushDataItem<E,Def>> : PushDataItem<E,Def>
 
 
 
 
-type EntityOUTItem<E extends RootEntity, Def extends PushDef<E>> 
-= Def extends  PushDefNodePk<E> |PushDefNodePks<E> ? EntityOUTPK<E,Def>
-: Def extends  PushDefNodeObject<E> |  PushDefNodeObjects<E> ? EntityOutObject<E,Def>
+type PushDataItem<E extends RootEntity, Def extends PushDef<E>> 
+= Def extends  PushDefNodePk<E> |PushDefNodePks<E> ? PushDataPK<E,Def>
+: Def extends  PushDefNodeObject<E> |  PushDefNodeObjects<E> ? PushDataObject<E,Def>
 : never
 
 
-type EntityOUTPK<E extends RootEntity, Def extends PushDefNodePk<E> |PushDefNodePks<E>> = Primary<E>
+type PushDataPK<E extends RootEntity, Def extends PushDefNodePk<E> |PushDefNodePks<E>> = Primary<E>
 
 
-type EntityOutObject<E extends RootEntity, Def extends PushDefNodeObject<E> |  PushDefNodeObjects<E> > = 
+type PushDataObject<E extends RootEntity, Def extends PushDefNodeObject<E> |  PushDefNodeObjects<E> > = 
 {
     [K in Extract<keyof Def['children'],keyof E>]: ExpandProperty<E[K]> extends RootEntity ? Def['children'][K] extends  PushDef<ExpandProperty<E[K]>> ? PushData<ExpandProperty<E[K]> , Def['children'][K] > : never: never
 }
@@ -56,7 +56,7 @@ HasCompositePk<E> extends true ?  never :  PkKeys<E>
 
 // /** Exemple */
 // import {Teacher} from '../../entities'
-// const [teacherOUT, def] = getTypedEntityOUT(Teacher, {
+// const [teacherOUT, def] = getTypedPushData(Teacher, {
 //     nodeType:'objects',
 //     allow:'create',
 //     //exclude:['iban'],

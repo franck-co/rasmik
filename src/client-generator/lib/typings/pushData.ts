@@ -1,24 +1,25 @@
 import { ExpandProperty, HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
 import { AllowProperty, PushDefNodeObject, PushDefNodeObjects, PushDefNodePk, PushDefNodePks, PushDef } from './pushDef'
 
-export type EntityOUT<E extends RootEntity, Def extends PushDef<E>> 
-= Def['nodeType'] extends 'collection' | 'pks' | 'objects' ? Array<EntityOUTItem<E,Def>> : EntityOUTItem<E,Def>
+
+export type PushData<E extends RootEntity, Def extends PushDef<E>> 
+= Def['nodeType'] extends  'pks' | 'objects' ? Array<PushDataItem<E,Def>> : PushDataItem<E,Def>
 
 
 
 
-type EntityOUTItem<E extends RootEntity, Def extends PushDef<E>> 
-= Def extends  PushDefNodePk<E> |PushDefNodePks<E> ? EntityOUTPK<E,Def>
-: Def extends  PushDefNodeObject<E> |  PushDefNodeObjects<E> ? EntityOutObject<E,Def>
+type PushDataItem<E extends RootEntity, Def extends PushDef<E>> 
+= Def extends  PushDefNodePk<E> |PushDefNodePks<E> ? PushDataPK<E,Def>
+: Def extends  PushDefNodeObject<E> |  PushDefNodeObjects<E> ? PushDataObject<E,Def>
 : never
 
 
-type EntityOUTPK<E extends RootEntity, Def extends PushDefNodePk<E> |PushDefNodePks<E>> = Primary<E>
+type PushDataPK<E extends RootEntity, Def extends PushDefNodePk<E> |PushDefNodePks<E>> = Primary<E>
 
 
-type EntityOutObject<E extends RootEntity, Def extends PushDefNodeObject<E> |  PushDefNodeObjects<E> > = 
+type PushDataObject<E extends RootEntity, Def extends PushDefNodeObject<E> |  PushDefNodeObjects<E> > = 
 {
-    [K in Extract<keyof Def['children'],keyof E>]: EntityOUT<ExpandProperty<E[K]>, Def['children'][K]>
+    [K in Extract<keyof Def['children'],keyof E>]: ExpandProperty<E[K]> extends RootEntity ? Def['children'][K] extends  PushDef<ExpandProperty<E[K]>> ? PushData<ExpandProperty<E[K]> , Def['children'][K] > : never: never
 }
 &
 //own props (apart from pks)
@@ -37,7 +38,7 @@ type EntityOutObject<E extends RootEntity, Def extends PushDefNodeObject<E> |  P
 
 
 
-type RequiredPkKeys<E extends RootEntity, AL extends AllowProperty >  
+type RequiredPkKeys<E extends RootEntity, AL extends AllowProperty | undefined>  
 = AL extends 'create' ? 
     HasCompositePk<E> extends true ?  PkKeys<E> :  never //Pas de pk si pk unique et creation (et autoincrement (pk unique numérique))
 : AL extends 'update' | 'ref' | undefined ? PkKeys<E> //nécessaire pour l'update (undefined -> default value is ref)
@@ -45,7 +46,7 @@ type RequiredPkKeys<E extends RootEntity, AL extends AllowProperty >
     HasCompositePk<E> extends true ?  PkKeys<E> :  never
 : never
 
-type OptionalPkKeys<E extends RootEntity, AL extends AllowProperty > 
+type OptionalPkKeys<E extends RootEntity, AL extends AllowProperty | undefined> 
 = AL extends 'upsert' ?
 HasCompositePk<E> extends true ?  never :  PkKeys<E> 
 : never
@@ -53,9 +54,10 @@ HasCompositePk<E> extends true ?  never :  PkKeys<E>
 
 
 
+
 // /** Exemple */
 // import {Teacher} from '../../entities'
-// const [teacherOUT, def] = getTypedEntityOUT(Teacher, {
+// const [teacherOUT, def] = getTypedPushData(Teacher, {
 //     nodeType:'objects',
 //     allow:'create',
 //     //exclude:['iban'],

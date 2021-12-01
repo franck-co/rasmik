@@ -1,8 +1,8 @@
-export const EntitySymbol = Symbol()
+export const EntitySymbol: unique symbol = Symbol()
 export class RootEntity {private [EntitySymbol]?:any}
 
-export const PrimaryKeyType = Symbol()
-export const PrimaryKeyNames = Symbol()
+export const PrimaryKeyType: unique symbol  = Symbol()
+export const PrimaryKeyNames: unique symbol  = Symbol()
 
 export declare type Dictionary<T = any> = {
     [k: string]: T;

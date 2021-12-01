@@ -1,13 +1,13 @@
-import { FilterQuery , ReadOptions, Loaded,EntityClass, EntityOUT, RootEntity, PushDef} from './typings';
+import { FilterQuery , ReadOptions, Loaded,EntityClass, PushData, RootEntity, PushDef} from './typings';
 
 
 interface RasmikErrorArgs {
     message:string
     messages?: string | string[]
-    usedDef?
-    usedWhere?
-    usedOptions?
-    pushData?
+    usedDef?:any
+    usedWhere?:any
+    usedOptions?:any
+    pushData?:any
 }
 
 export class RasmikError extends Error {
@@ -18,10 +18,10 @@ export class RasmikError extends Error {
 
     type?: string
     messages?: string | string[]
-    usedDef?
-    usedWhere?
-    usedOptions?
-    pushData?
+    usedDef?:any
+    usedWhere?:any
+    usedOptions?:any
+    pushData?:any
 }
 
 interface ClientConfig {
@@ -41,7 +41,7 @@ export class RasmikClient {
     config: ClientConfig
 
     constructor(config: ClientConfig) {
-        Object.assign(this.config, config)
+        this.config = config
     }
 
     services = services
@@ -55,14 +55,11 @@ export class RasmikClient {
         return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/readMany', {where,options})
     }
 
-
-    /** Le type obtenu doit être utilisé dans toutes les manipulations pour ne pas risquer de mauvais assignement */
-    getTypedEntityOUT<E extends RootEntity, PDef extends Readonly<PushDef<E>>>(entity?: EntityClass<E>, def?:PDef):[entityOUT:EntityOUT<E,PDef>, def:PDef]{
-        return undefined
-    }
+    typePushDef<E extends RootEntity, PDef extends Readonly<PushDef<E>>>(EntityClass: EntityClass<E>,def: PDef):PDef{return def}
+    typePushData<E extends RootEntity, PDef extends Readonly<PushDef<E>>>(EntityClass: EntityClass<E>,def: PDef, data: PushData<E, PDef>){return data}
 
 
-    async push<E extends RootEntity, PDef extends Readonly<PushDef<E>>, P extends string = never>(entity: EntityClass<E>, pushDef:PDef, data:EntityOUT<E,PDef>, readOptions?:ReadOptions<E,P> | false):  Promise<PDef extends false ? void : PDef['nodeType'] extends 'objects' ? Loaded<E,P>[]: Loaded<E,P>>{
+    async push<E extends RootEntity, PDef extends Readonly<PushDef<E>>, P extends string = never>(entity: EntityClass<E>, pushDef:PDef, data:PushData<E,PDef>, readOptions?:ReadOptions<E,P> | false):  Promise<PDef extends false ? void : PDef['nodeType'] extends 'objects' ? Loaded<E,P>[]: Loaded<E,P>>{
         return await this.request(this.config.baseUrl + '/crud/' + (entity as any).__path + '/push', {pushDef,data, readOptions})
     }
 
@@ -86,7 +83,7 @@ export class RasmikClient {
               }})
             const data = res.data
             return data
-        } catch (err) {
+        } catch (err:any) {
 
             const serverError = err.response?.data
             if (serverError?.error === true) {

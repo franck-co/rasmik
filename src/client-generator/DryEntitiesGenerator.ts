@@ -5,6 +5,8 @@ export interface DryEntitiesGeneratorSettings {
     outputFilePathRel:string
     prefix?: string
     pathToRasmikTypes?:string
+    emit?:boolean
+    disableFeedback?:boolean
 }
 
 
@@ -16,7 +18,8 @@ export class DryEntitiesGenerator {
         this.sourcesGlob =  settings.sourcesGlob || ['src/entities/**/*.ts']
         this.pathToRasmikTypes = settings.pathToRasmikTypes || 'rasmik/dist/typings'
         this.prefix = settings.prefix || ''
-
+        this.emit = settings.emit || true 
+        this.disableFeedback = settings.disableFeedback || false
         if(this.outputFilePathRel.endsWith('/')) this.outputFilePathRel = this.outputFilePathRel.slice(0,- 1)
     }
 
@@ -25,6 +28,7 @@ export class DryEntitiesGenerator {
     //public endpointsDirGlob: string | string[]
     public prefix: string
     public pathToRasmikTypes:string
+    public emit:boolean
 
 
     private outputFile!: SourceFile
@@ -32,6 +36,7 @@ export class DryEntitiesGenerator {
     protected project!: Project
 
     protected excluded: string[]= []
+    private disableFeedback:boolean
 
 
     public async generate() {
@@ -49,14 +54,19 @@ export class DryEntitiesGenerator {
         this.outputFile.replaceWithText(this.outputFile.print({ removeComments: true }))
 
         this.renameExports()
-        this.outputFile.saveSync()
+        if(this.emit){
+            this.outputFile.emitSync()
+        }else{
+            this.outputFile.saveSync()
+        }
 
+        if(this.disableFeedback)return
 this.display(`Dry entities generated succesfully at ${this.outputFilePathRel} !` + (this.excluded.length ? `
 ${this.excluded.length} types couldn't be included because they are too dependant on other types :
 
 ${this.excluded.join('\n')}
 `:`
-All the types are included.`)
+All the types are included.\n`)
 )
         // console.log(this.outputFile.getText())
     }
@@ -68,10 +78,11 @@ All the types are included.`)
         this.project = new Project({
             tsConfigFilePath: 'tsconfig.json',
             skipAddingFilesFromTsConfig: true,
+            compilerOptions:{outDir:undefined, sourceMap:false}
         });
 
         const imports = `
-        import { RootEntity, PrimaryKeyType, PrimaryKeyNames,_Ignored_ } from 'rasmik';
+        import { RootEntity, PrimaryKeyType, PrimaryKeyNames,_Ignored_ } from '${this.pathToRasmikTypes}';
         const _Ignored_ : _Ignored_ = null
         
         
@@ -126,6 +137,8 @@ All the types are included.`)
             /** Finaly remove all the decorators for the prop */
             prop.getDecorators().forEach(dec => dec.remove())
             prop.removeInitializer()
+
+            prop.setHasQuestionToken(true)
         }
 
         /** treat accessors */
