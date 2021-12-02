@@ -148,7 +148,7 @@ All the types are included.\n`)
                 name: getter.getName(),
                 type:getter.getReturnType().getText(getter)
             })
-            .toggleModifier('readonly', !cls.getSetAccessor(getter.getName()))
+            .toggleModifier('readonly', !cls.getSetAccessor(getter.getName())).setHasQuestionToken(true)
 
             
             cls.getSetAccessor(getter.getName())?.remove()

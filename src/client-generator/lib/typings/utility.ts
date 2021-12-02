@@ -21,7 +21,7 @@ export declare type ExpandScalar<T> = null | (T extends string ? string | RegExp
 
 /** Added ? tokens for client */
 export type Primary<T> = T extends {
-    [PrimaryKeyType]: infer PK;
+    [PrimaryKeyType]?: infer PK;
 } ? ReadonlyPrimary<PK> : T extends {
     _id?: infer PK;
 } ? ReadonlyPrimary<PK> | string : T extends {
