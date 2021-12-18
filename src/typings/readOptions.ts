@@ -1,4 +1,4 @@
-import { FindOptions as StdReadOptions} from '@mikro-orm/core';
+import { Collection, FindOptions as StdReadOptions} from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/dist/typings';
 import { RemoveNever } from './utility';
 import { RootEntity } from './utility';
@@ -36,7 +36,7 @@ export type DeleteDefNode<E extends RootEntity> = DeleteDefNodeObj<E> | true
 
 
 type ReadChildrenMapped<E extends RootEntity> = Partial<{
-    [K in keyof E]: E[K] extends Array<infer U> ? 
+    [K in keyof E]: E[K] extends Collection<infer U> ? 
                         U extends RootEntity ?  ReadDefNode<U> : never
                         :  E[K] extends RootEntity ?  ReadDefNode<E[K]>  : never
 }>
@@ -45,7 +45,7 @@ type ReadChildren<E extends RootEntity> = RemoveNever<ReadChildrenMapped<E>>
 
 
 type DeleteChildrenMapped<E extends RootEntity> = Partial<{
-    [K in keyof E]: E[K] extends Array<infer U> ? 
+    [K in keyof E]: E[K] extends Collection<infer U> ? 
                         U extends RootEntity ?  DeleteDefNode<U> : never
                         :  E[K] extends RootEntity ?  DeleteDefNode<E[K]>  : never
 }>

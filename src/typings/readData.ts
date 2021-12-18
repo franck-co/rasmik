@@ -1,4 +1,4 @@
-import { Loaded } from '@mikro-orm/core';
+import { Collection, Loaded } from '@mikro-orm/core';
 import { ExpandProperty } from '@mikro-orm/core/dist/typings';
 import { RemoveNever } from '.';
 import { ReadDefNode } from './readOptions';
@@ -15,7 +15,7 @@ export type ReadData<E extends RootEntity, Def extends ReadDefNode<E> = true> = 
     {
     [K in Extract<keyof SafeDef<Def>['children'], keyof E> ]: ExpandProperty<E[K]> extends RootEntity ?
                                                                 SafeDef<Def>['children'][K] extends ReadDefNode<ExpandProperty<E[K]>> ? 
-                                                                    E[K] extends Array<any> ? 
+                                                                    E[K] extends Collection<any> ? 
                                                                     Array<ReadData<ExpandProperty<E[K]>,SafeDef<Def>['children'][K]>>
                                                                     : ReadData<ExpandProperty<E[K]>,SafeDef<Def>['children'][K]> 
                                                                 : never 
@@ -24,7 +24,7 @@ export type ReadData<E extends RootEntity, Def extends ReadDefNode<E> = true> = 
     &
     //Not populated => pk always there for OneToOne and ManyToOne 
     {
-        [K in Exclude<RelationKey<E>,keyof SafeDef<Def>['children']>]: E[K] extends Array<any> ? never : Primary<E[K]>
+        [K in Exclude<RelationKey<E>,keyof SafeDef<Def>['children']>]: E[K] extends Collection<any> ? never : Primary<E[K]>
     }
     &
     {
