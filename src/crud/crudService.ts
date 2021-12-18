@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { RasmikServer } from '../rasmik';
+import { RasmikError } from '../errors';
 
 
 export class CrudService {
@@ -17,15 +18,11 @@ export class CrudService {
         return !!this.messages.length
     }
 
-    // throw(){
-    //     throw new Error(this.messages.join('\n # '))
+    // throwIfError(){
+    //     if(this.isErr)   this.throw()
     // }
 
-    throwIfError(){
-        if(this.isErr)   this.throw()
-    }
-
-    throw(){
-        throw new Error(this.messages.join('\n # '))
-    }
+    // throw(ErrorClass:Error){
+    //     throw new ErrorClass(this.messages.join('\n # '))
+    // }
 }

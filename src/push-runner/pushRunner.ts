@@ -21,8 +21,8 @@ export class PushRunner {
     topDef!: NodeDef
 
     /* Build a tree of NodeDef acording to the raw pushDef */
-    buildDefTree() {
-        this.topDef = new NodeDef(this.EntityClass,  this.defRaw);
+    buildDefTree(type:'coll' | 'single') {
+        this.topDef = new NodeDef(this.EntityClass,  this.defRaw,type);
         this.topDef.initSubs()
     }
 
@@ -30,9 +30,6 @@ export class PushRunner {
     buildHandlerTree(pushData: any) {
 
         this.topHandler = this.createTopHandler(this.topDef, pushData, this.em)
-        this.topHandler.initChildren()
-
-        this.topHandler =  this.createTopHandler(this.topDef, pushData, this.em)
         this.topHandler.initChildren()
 
     }
@@ -63,17 +60,22 @@ export class PushRunner {
     
     getNext(){
         if(this.topHandler instanceof SingletonHandler){
-            return wrap(this.topHandler.item.entity).toReference()
+            // return wrap(this.topHandler.item.entity).toReference()
+            const entity = this.topHandler.item.entity
+            return this.topDef.pkNames.length=== 1 ?  entity[this.topDef.pkNames[0]] : this.topDef.pkNames.map(pkName=>entity[pkName]) 
         }
         if(this.topHandler instanceof CollectionHandler){
-            const refs = this.topHandler.items.map(item=>wrap(item.entity).toReference())
-            return refs 
+            // const refs = this.topHandler.items.map(item=>wrap(item.entity).toReference())
+            return this.topHandler.items.map(item=>{
+                const entity = item.entity
+                return this.topDef.pkNames.length=== 1 ?  entity[this.topDef.pkNames[0]] : this.topDef.pkNames.map(pkName=>entity[pkName]) 
+            })
         }
     }
 
     private createTopHandler(def: NodeDef, data: any, em: EntityManager<any>): SingletonHandler | CollectionHandler {
     
-        if (['id', 'object'].includes(def.nodeType)) {
+        if (['pk', 'object'].includes(def.nodeType)) {
             return new SingletonHandler(def, data, em)
         }else {//'ids', 'objects'
             return new CollectionHandler(def, data, em)

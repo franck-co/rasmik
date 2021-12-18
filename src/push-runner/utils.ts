@@ -113,4 +113,11 @@ export class Utils {
         return v === null || typeof v === "undefined"
     }
 
+    static getPrimaryKeyCondFromArray(pks: any[], primaryKeys: string[]) {
+        return primaryKeys.reduce((o, pk, idx) => {
+          o[pk] = pks[idx]
+          return o;
+        }, {} as any);
+      }
+
 }

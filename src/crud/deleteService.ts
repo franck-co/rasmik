@@ -1,16 +1,17 @@
-import { EntityManager, FilterQuery ,EntityClass} from '@mikro-orm/core'
+import { EntityManager, FilterQuery ,EntityClass, ServerException} from '@mikro-orm/core'
 import { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
 import { Helper } from '../helper'
 import { DeleteOptions } from '../typings'
+import { RasmikDbError, RasmikError, RasmikValidationError } from '..'
 
 export class DeleteService  extends CrudService {
 
     where:FilterQuery<any>
-    options:DeleteOptions<any,never>
+    options:DeleteOptions<any>
     EntityClass:EntityClass<any>
 
-    constructor(rasmik:RasmikServer<any>,EntityClass:EntityClass<any>, where:FilterQuery<any>,options?:DeleteOptions<any,never>, em?:EntityManager<any>){
+    constructor(rasmik:RasmikServer<any>,EntityClass:EntityClass<any>, where:FilterQuery<any>,options?:DeleteOptions<any>, em?:EntityManager<any>){
         super(rasmik,em)
         this.EntityClass = EntityClass
         this.where = where || {};
@@ -24,33 +25,27 @@ export class DeleteService  extends CrudService {
 
         //throw if not valid
         this.verifyArgs()
-        this.throwIfError()
+        if(this.isErr) throw new RasmikValidationError(...this.messages)
 
 
         let foundEntity:any
         try{
-            foundEntity = await this.rasmik.readOne(this.EntityClass, this.where,readOptions,this.em)
+            foundEntity = await this.rasmik.readOne(this.EntityClass).where(this.where).options(readOptions).run(this.em)
         }catch(err:any){
-            console.error(err)
-            this.messages.push("error while running rasmik.readOne",err.message)
+            if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.findOne")
+            else throw new RasmikError(err,"error while running em.findOne")
         }
-
-        this.throwIfError()
 
         if(failIfNull && !foundEntity){
-            this.messages.push("no row to delete")
+            throw new RasmikValidationError("no row to delete")
         }
-
-        this.throwIfError()
 
         try{
             await this.em.remove(foundEntity).flush()
         }catch(err:any){
-            console.error(err)
-            this.messages.push("error while running em.remove",err.message)
+            if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.remove")
+            else throw new RasmikError(err,"error while running em.remove")
         }
-
-        this.throwIfError()
 
         return foundEntity
     }
@@ -59,37 +54,34 @@ export class DeleteService  extends CrudService {
 
 
     async deleteMany(){
-        const { loadCustom, exclude,failIfNull,...findOptions} = this.options
+        const { loadCustom, failIfNull,...readOptions} = this.options
 
         //throw if not valid
         this.verifyArgs()
-        this.throwIfError()
+        if(this.isErr) throw new RasmikValidationError(...this.messages)
 
         let foundEntities:any[]=[]
         try{
-            foundEntities = await this.rasmik.readMany(this.EntityClass, this.where, findOptions,this.em)
+            foundEntities = await this.rasmik.readMany(this.EntityClass).where(this.where).options(readOptions).run(this.em)
         }catch(err:any){
-            console.error(err)
-            this.messages.push("error while running em.find",err.message)
+            if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.findOne")
+            else throw new RasmikError(err,"error while running em.findOne")
         }
 
-        this.throwIfError()
 
 
         if(failIfNull && !foundEntities.length){
-            this.messages.push("no row to delete")
+            throw new RasmikValidationError("no rows to delete")
         }
 
-        this.throwIfError()
 
         try{
             await this.em.remove(foundEntities).flush()
         }catch(err:any){
-            console.error(err)
-            this.messages.push("error while running em.remove",err.message)
+            if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.remove")
+            else throw new RasmikError(err,"error while running em.remove")
         }
 
-        this.throwIfError()
         return foundEntities
     }
 

@@ -1,4 +1,5 @@
 import { ClassDeclaration, InterfaceDeclaration, Node, ObjectLiteralExpression, Project, PropertyDeclaration, PropertySignature, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
+import pluralize from 'pluralize'
 
 export interface DryEntitiesGeneratorSettings {
     sourcesGlob?: string | string[]
@@ -7,6 +8,8 @@ export interface DryEntitiesGeneratorSettings {
     pathToRasmikTypes?:string
     emit?:boolean
     disableFeedback?:boolean
+    noComputedProperties?: boolean
+    noTupleTypes?: boolean
 }
 
 
@@ -18,8 +21,11 @@ export class DryEntitiesGenerator {
         this.sourcesGlob =  settings.sourcesGlob || ['src/entities/**/*.ts']
         this.pathToRasmikTypes = settings.pathToRasmikTypes || 'rasmik/dist/typings'
         this.prefix = settings.prefix || ''
-        this.emit = settings.emit || true 
-        this.disableFeedback = settings.disableFeedback || false
+        this.emit = settings.emit ?? true 
+        this.disableFeedback = settings.disableFeedback ?? false
+        this.noComputedProperties =  settings.noComputedProperties ?? false
+        this.noTupleTypes =  settings.noTupleTypes ?? false
+
         if(this.outputFilePathRel.endsWith('/')) this.outputFilePathRel = this.outputFilePathRel.slice(0,- 1)
     }
 
@@ -37,6 +43,9 @@ export class DryEntitiesGenerator {
 
     protected excluded: string[]= []
     private disableFeedback:boolean
+    private noComputedProperties: boolean
+    private noTupleTypes: boolean
+
 
 
     public async generate() {
@@ -82,7 +91,7 @@ All the types are included.\n`)
         });
 
         const imports = `
-        import { RootEntity, PrimaryKeyType, PrimaryKeyNames,_Ignored_ } from '${this.pathToRasmikTypes}';
+        import { RootEntity, PrimaryKeyType, PrimaryKeyNames, CustomLoaded, JsonRecord, _Ignored_ } from '${this.pathToRasmikTypes}';
         const _Ignored_ : _Ignored_ = null
         
         
@@ -119,6 +128,15 @@ All the types are included.\n`)
             if(prop.hasModifier('private') || prop.hasModifier('protected') || prop.hasModifier('protected')){
                 prop.remove()
                 continue
+            }
+
+            if(this.noComputedProperties && prop.getNameNode().getKind() === SyntaxKind.ComputedPropertyName){
+                prop.remove()
+                continue
+            }
+
+            if(this.noTupleTypes && prop.getType().isTuple()){
+                prop.setType(`any[]`)
             }
 
             /* convert collections to Array */
@@ -161,13 +179,16 @@ All the types are included.\n`)
 
             const objLitParam: ObjectLiteralExpression = crudEndpointDecorator.getCallExpression()?.getArguments()[0] as any
             //@ts-ignore
-            const pathValue = objLitParam.getProperty('path').getInitializer().getText()
-
+            let pathValue = objLitParam?.getProperty('path')?.getInitializer().getText()
+            
+            if(!pathValue){
+                pathValue =`'${pluralize(cls.getName()!.replace(/((?<=[a-z\d])[A-Z]|(?<=[A-Z\d])[A-Z](?=[a-z]))/g, '-$1').toLowerCase())}'`
+            }
 
             cls.addProperty({
                 isStatic: true,
                 name: '__path',
-                initializer: `${pathValue}`,
+                initializer: `${trimSlashes(pathValue)}`,
             }).toggleModifier('private', true)
 
             crudEndpointDecorator.remove()
@@ -346,4 +367,11 @@ All the types are included.\n`)
     }
 
 
+}
+
+
+
+function trimSlashes (path:string) {
+    const noQuotes =path.slice(1,-1)
+    return `'${noQuotes.replace(new RegExp("^[/]+|[/]+$", "g"), "")}'`      
 }

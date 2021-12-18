@@ -2,7 +2,8 @@ import { ExpandProperty } from '@mikro-orm/core/dist/typings';
 import {PrimaryKeyType} from '@mikro-orm/core'
 export const EntitySymbol: unique symbol = Symbol()
 export class RootEntity {private [EntitySymbol]?:any}
-
+export declare type CustomLoaded<T extends RootEntity> = Omit<T, keyof RootEntity>
+export declare type JsonRecord<T extends object = Record<string,any>> = T & {[EntitySymbol]?:never}
 export const PrimaryKeyNames: unique symbol = Symbol()
 export {PrimaryKeyType}
 

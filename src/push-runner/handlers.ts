@@ -50,14 +50,13 @@ export class SingletonHandler extends Handler {
         if(!parentEntity) return
         
         //linking item to parent
-        
-        const oldEntity = parentEntity[this.nodeDef.propertyName!]
         parentEntity[this.nodeDef.propertyName!] = this.item.entity
 
-        if(this.nodeDef.deleteOrphans && oldEntity && oldEntity !== this.item.entity){
-            console.log('old entity deleted')
-            this.em.remove(oldEntity)
-        }
+        // const oldEntity = parentEntity[this.nodeDef.propertyName!]
+        // if(this.nodeDef.deleteOrphans && oldEntity && oldEntity !== this.item.entity){
+        //     console.log('old entity deleted')
+        //     this.em.remove(oldEntity)
+        // }
         // deleteOrphans object
     }
     
@@ -136,18 +135,18 @@ export class CollectionHandler extends Handler {
 
         //linking items to parent
         if(this.nodeDef.collectionMode === 'set'){
-            const oldEntities = collection.getItems()
+            // const oldEntities = collection.getItems()
             collection.set(entities)
 
-            const removedEntities = oldEntities.reduce((acc,oldEntity)=>{
-                !collection.contains(oldEntity) && acc.push(oldEntity)
-                return acc
-            },[])
+            // const removedEntities = oldEntities.reduce((acc,oldEntity)=>{
+            //     !collection.contains(oldEntity) && acc.push(oldEntity)
+            //     return acc
+            // },[])
             
 
-            if(this.nodeDef.deleteOrphans){
-                this.em.remove(removedEntities)
-            }
+            // if(this.nodeDef.deleteOrphans){
+            //     this.em.remove(removedEntities)
+            // }
         }
 
         if(this.nodeDef.collectionMode === 'add'){
@@ -156,9 +155,9 @@ export class CollectionHandler extends Handler {
 
         if(this.nodeDef.collectionMode === 'remove'){
             collection.remove(...entities)
-            if(this.nodeDef.deleteOrphans){
-                this.em.remove(entities)
-            }
+            // if(this.nodeDef.deleteOrphans){
+            //     this.em.remove(entities)
+            // }
         }
     }
 }

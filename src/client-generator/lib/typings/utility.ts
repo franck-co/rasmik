@@ -1,5 +1,7 @@
 export const EntitySymbol: unique symbol = Symbol()
 export class RootEntity {private [EntitySymbol]?:any}
+export declare type CustomLoaded<T extends RootEntity> = Omit<T, keyof RootEntity> 
+export declare type JsonRecord<T extends object = Record<string,any>> = T & {[EntitySymbol]?:never}
 
 export const PrimaryKeyType: unique symbol  = Symbol()
 export const PrimaryKeyNames: unique symbol  = Symbol()
@@ -29,6 +31,8 @@ export type Primary<T> = T extends {
 } ? ReadonlyPrimary<PK> : T extends {
     id?: infer PK;
 } ? ReadonlyPrimary<PK> : never;
+
+
 
 type ReadonlyPrimary<T> = T extends any[] ? Readonly<T> : T;
 
@@ -112,3 +116,14 @@ export type RemoveNever<T, L extends string = never> = {
 }
 
 export type _Ignored_<A=any,B=any,C=any,D=any,E=any,F=any,G=any,H=any,I=any,J=any,K=any,L=any,M=any,N=any,O=any,P=any,Q=any,R=any,S=any,T=any,U=any,V=any,W=any,X=any,Y=any,Z=any> = any 
+
+
+
+export type NoExcess<O, P> = {
+    [K in keyof P]:
+      K extends keyof O
+        ? P[K]/*O[K] extends P[K]
+          ? NoExcess<O[K], P[K]>
+          : never*/
+        : never
+    }

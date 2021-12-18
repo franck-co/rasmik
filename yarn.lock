@@ -13,17 +13,17 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@mikro-orm/core@^5.0.0-dev.539":
-  version "5.0.0-dev.539"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-5.0.0-dev.539.tgz#a01343f4d51f868a91c3fc88dc877615ce3952d8"
-  integrity sha512-NBEoh92mg3h7vCDmMczZQcqAqniqsrzHFbzAf1F0N+4QJx2B7+boW5uIiOvgYpzG+wvupm8DMocO+zr2uAuHZg==
+"@mikro-orm/core@5.0.0-dev.560":
+  version "5.0.0-dev.560"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-5.0.0-dev.560.tgz#0c815004e110184848530f4631d88bec8f3a4a9d"
+  integrity sha512-M3wlkKpsH/KvvP9O1x35niKzCEs8Wlxz8EAVWWsCM8/25PU/7EeXYilTDUhYK1NAz4nBn1hveJLy/eEWVb2a5w==
   dependencies:
     clone "2.1.2"
     dotenv "10.0.0"
     escaya "0.0.61"
     fs-extra "10.0.0"
     globby "11.0.4"
-    mikro-orm "^5.0.0-dev.539+e57984d0d3"
+    mikro-orm "^5.0.0-dev.560+f1d8bf1dcd"
     reflect-metadata "0.1.13"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -134,6 +134,11 @@
   version "16.11.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.10.tgz#2e3ad0a680d96367103d3e670d41c2fed3da61ae"
   integrity sha512-3aRnHa1KlOEEhJ6+CvyHKK5vE9BcLGjtUpwvqYLRvYNQKMfabu3BwfJaA/SLW8dxe28LsNDjtHwePTuzn3gmOA==
+
+"@types/pluralize@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/pluralize/-/pluralize-0.0.29.tgz#6ffa33ed1fc8813c469b859681d09707eb40d03c"
+  integrity sha512-BYOID+l2Aco2nBik+iYS4SZX0Lf20KPILP5RGmM1IgzdwNdTs0eebiFriOPcej1sX9mLnSoiNte5zcFxssgpGA==
 
 "@types/qs@*":
   version "6.9.7"
@@ -448,10 +453,10 @@ micromatch@^4.0.4:
     braces "^3.0.1"
     picomatch "^2.2.3"
 
-mikro-orm@^5.0.0-dev.539+e57984d0d3:
-  version "5.0.0-dev.539"
-  resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-5.0.0-dev.539.tgz#b5f5989d47223ba01fd4d3c5b8af28381fe85986"
-  integrity sha512-8KvxzHyhxH4FQehzDnjS1nh1H4KKBCkUYjjjA1fXa5Li6f1NRDSal7vhv1Htt6Hcl0QfWFJnqyBo2sd6OS9LWA==
+mikro-orm@^5.0.0-dev.560+f1d8bf1dcd:
+  version "5.0.0-dev.560"
+  resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-5.0.0-dev.560.tgz#f8ce8417eb4578c660ff8159fd16b80fbd94baae"
+  integrity sha512-D2XimTgog6BnxZhZc0vd5z+AZdV+ztF2m0hiMXq2iDemy8P5RY7zcuVa4cOTQs0yZ+Cjk0L0rzQ6mC8qhfdcag==
 
 minimatch@^3.0.4:
   version "3.0.4"
@@ -496,6 +501,11 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.0.tgz#f1f061de8f6a4bf022892e2d128234fb98302972"
   integrity sha512-lY1Q/PiJGC2zOv/z391WOTD+Z02bCgsFfvxoXXf6h7kv9o+WmsmzYqrAwY63sNgOxE4xEdq0WyUnXfKeBrSvYw==
+
+pluralize@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-8.0.0.tgz#1a6fa16a38d12a1901e0320fa017051c539ce3b1"
+  integrity sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==
 
 pretty-format@^27.0.0, pretty-format@^27.4.1:
   version "27.4.1"

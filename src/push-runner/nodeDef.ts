@@ -1,7 +1,8 @@
 import { EntityClass, EntityMetadata } from '@mikro-orm/core'
-import { AllowOption, allowOptions, AnyPushDef, CollectionMode, collectionModes, NodeType, nodeTypes, PushDef, UnionToIntersection } from '../typings'
+import { AllowOption, allowOptions, AnyPushDef, CollectionMode, collectionModes, PushDef, UnionToIntersection } from '../typings'
 
-
+export const nodeTypes = ['object' , 'pk' , 'objects','pks'] as const
+export type NodeType =  typeof nodeTypes[number]
 /** 
  * Sets the def defaults
  * Valiate the def
@@ -38,7 +39,7 @@ export class NodeDef {
         subDefs: NodeDef[] = []
 
 
-    constructor(EntityClass:EntityClass<any>, nodeDefRaw: AnyPushDef, upperDef?: NodeDef, propertyName?:string) {
+    constructor(EntityClass:EntityClass<any>, nodeDefRaw: AnyPushDef,type:'coll' | 'single', upperDef?: NodeDef, propertyName?:string) {
 
         //init pushdef props
         this.initDef(nodeDefRaw)
@@ -51,15 +52,21 @@ export class NodeDef {
         this.EntityClass = EntityClass
         this.EntityMeta = this.EntityClass.prototype.__meta
         this.pkNames = this.EntityMeta.primaryKeys
+
+        if(this.allow === 'pk'){
+            this.nodeType = type === 'coll' ? 'pks' : 'pk'
+        }else{
+            this.nodeType = type === 'coll' ? 'objects' : 'object'
+        }
     }
 
-    private initDef(nodeDefRaw: AnyPushDef){
-        const {allow,children,collectionMode,deleteOrphans,exclude,hooks,include,nodeType,strict} = nodeDefRaw
+    private initDef(nodeDefRaw: AnyPushDef = {}){
+        const {allow,children,collectionMode,/*deleteOrphans,*/exclude,hooks,include,strict} = nodeDefRaw
         this.allow = allow || 'ref';
-        this.nodeType = nodeType as any as NodeType
+        // this.nodeType = nodeType as any as NodeType
         this.children = children as any || {}
         this.collectionMode = collectionMode || 'ref'
-        this.deleteOrphans = deleteOrphans || false
+        // this.deleteOrphans = deleteOrphans || false
         this.exclude = exclude as string[] || []
         this.include = include as string[] || []
         this.hooks = hooks || []
@@ -71,10 +78,16 @@ export class NodeDef {
         for (const childPropKey in this.children){
             const ChildEntityClass = this.EntityMeta?.properties[childPropKey]?.targetMeta?.class
             const childDef = this.children[childPropKey]
-            const subDef = new NodeDef(ChildEntityClass!,childDef, this, childPropKey)
+            const reference =  this.EntityMeta?.properties[childPropKey]?.reference
+            const type = (reference === "1:m" || reference === "m:n") ? 'coll' : 'single'
+            const subDef = new NodeDef(ChildEntityClass!,childDef, type,this, childPropKey)
             subDef.initSubs()
             this.subDefs.push(subDef)
         }
+    }
+
+    initNodeType(){
+        
     }
 
 
@@ -90,7 +103,9 @@ export class NodeDef {
 
 
         return Object.keys(this.EntityMeta.properties).reduce<string[]>((acc, key) => {
-            (this.EntityMeta.properties[key].reference === 'scalar'  || this.EntityMeta.properties[key].reference === 'embedded') && acc.push(key); return acc
+            if(this.EntityMeta.properties[key].reference === 'scalar'  || this.EntityMeta.properties[key].reference === 'embedded') acc.push(key);
+            else if(this.EntityMeta.properties[key].primary) acc.push(key); //rel pk
+            return acc
         }, [])
     }
 
@@ -206,7 +221,7 @@ export class NodeDef {
             const arr = []
             for (const hook of this.hooks) {
                 const name = (typeof hook === 'string') ? hook : hook.name
-                if (!Object.keys(this.EntityClass.prototype).includes(name)) arr.push(name)
+                if (!(typeof this.EntityClass.prototype[name] === 'function')) arr.push(name)
             }
             if (arr.length) {
                 msgArr.push(`${this.fullNodeName} - Unknown hooks '${arr.join(', ')}'`)
@@ -216,7 +231,7 @@ export class NodeDef {
 
 
          //specific to child node
-         if(!this.isTop && this.upperDef!.EntityMeta.relations.some(rel=>rel.name === this.propertyName)){
+         if(!this.isTop && !this.upperDef!.EntityMeta.relations.some(rel=>rel.name === this.propertyName)){
             msgArr.push(`${this.propertyName} not a relation of ${this.upperDef!.fullNodeName}`)
             okSelf = false
         }

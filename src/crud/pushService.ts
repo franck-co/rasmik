@@ -1,8 +1,10 @@
-import { EntityManager, Reference, EntityClass } from '@mikro-orm/core'
+import { EntityManager, Reference, EntityClass, ServerException } from '@mikro-orm/core'
 import { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
 import { AnyPushDef } from '../typings'
 import { PushRunner } from '../push-runner'
+import { RasmikDbError, RasmikError, RasmikValidationError } from '../errors'
+
 
 export class PushService extends CrudService {
 
@@ -19,17 +21,24 @@ export class PushService extends CrudService {
         this.runner = new PushRunner(EntityClass, def, data, this.em)
     }
 
-    /** @returns next identifier(s) */
-    async push(): Promise<Reference<any> | Reference<any>[] | undefined> {
 
-        this.runner.buildDefTree()
+
+        /** @returns next identifier(s) */
+        async pushOne(): Promise<Reference<any> | undefined> {
+            return await this.push('single') as any
+        }
+
+        /** @returns next identifier(s) */
+        async pushMany(): Promise< Reference<any>[] | undefined> {
+            return await this.push('coll') as any
+        }
+
+    private async push(type:'coll' | 'single'): Promise<Reference<any> | Reference<any>[] | undefined> {
+
+        this.runner.buildDefTree(type)
 
         const [isOkDefs, msgArrDefs] = this.runner.verifyDefs()
-        if (!isOkDefs) {
-            this.messages.push(...msgArrDefs)
-            this.throw()
-
-        }
+        if (!isOkDefs) throw new RasmikValidationError(...msgArrDefs)
 
         //1st pass to apply hooks
         this.runner.buildHandlerTree(this.data)
@@ -37,19 +46,14 @@ export class PushService extends CrudService {
         try {
             await this.runner.applyDataHooks()
         } catch (err : any) {
-            console.log(err)
-            this.messages.push('error while running data hooks', err.message)
-            this.throw()
+          throw new RasmikError(err,'error while running data hooks')
         }
 
         //2nd pass because hooks can modify data
         this.runner.buildHandlerTree(this.data)
 
         const [isOkItems, msgArrItems] = this.runner.verifyItems()
-        if (!isOkItems) {
-            this.messages.push(...msgArrItems)
-            this.throw()
-        }
+        if (!isOkItems) throw new RasmikValidationError(...msgArrItems)
 
 
         await this.runner.handle()
@@ -60,9 +64,8 @@ export class PushService extends CrudService {
         try {
             await this.em.flush()
         } catch (err:any) {
-            console.error("erreur pendant le flush", err)
-            this.messages.push("erreur pendant le flush : " + err.message)
-            this.throw()
+            if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.flush")
+            else throw new RasmikError(err,"error while running em.flush")
         }
 
 

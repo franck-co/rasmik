@@ -2,7 +2,7 @@ import { EntityClass } from '@mikro-orm/core';
 import { NextFunction, Request, Response } from 'express';
 
 export interface CrudEndpointParams {
-    path:string, 
+    path?:string, 
     security?:any
     middlewares?: Middleware | Array<Middleware>
 }
@@ -17,5 +17,5 @@ export interface CrudEndpointDef {
 export type Middleware  = ((req:Request,res:Response,next:NextFunction)=>void)
 
 
-export const crudRequestTypes = ['push', 'readOne', 'readMany', 'deleteOne', 'deleteMany'] as const
+export const crudRequestTypes = ['pushOne','pushMany', 'readOne', 'readMany', 'deleteOne', 'deleteMany'] as const
 export type CrudRequestType = typeof crudRequestTypes[number]

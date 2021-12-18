@@ -28,7 +28,7 @@ export class ClientGenerator extends DryEntitiesGenerator {
             disableFeedback:true
         })
 
-        this.clearOutputDir = settings.clearOutputDir || false
+        this.clearOutputDir = settings.clearOutputDir ?? false
         this.outputDirPathAbsolute = path.join(process.cwd(), settings.outputDirPath)
     }
 

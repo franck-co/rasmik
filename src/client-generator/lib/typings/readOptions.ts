@@ -1,20 +1,20 @@
-import { AutoPath, ExpandProperty, Dictionary, EntityField } from './utility';
+import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey } from './utility';
 import {QBFilterQuery} from './filterQuery'
 
-interface StdReadOptions<T, P extends string = never> {
-    populate?: readonly AutoPath<T, P>[] | boolean;
-    orderBy?: QueryOrderMap<T> | QueryOrderMap<T>[];
+interface StdReadOptions<E extends RootEntity> {
+    //populate?: readonly AutoPath<T, P>[] | boolean;
+    orderBy?: QueryOrderMap<E> | QueryOrderMap<E>[];
     cache?: boolean | number | [string, number];
     limit?: number;
     offset?: number;
     refresh?: boolean;
     convertCustomTypes?: boolean;
     disableIdentityMap?: boolean;
-    fields?: readonly EntityField<T, P>[];
+    //fields?: readonly EntityField<T, P>[];
     schema?: string;
     flags?: QueryFlag[];
     groupBy?: string | string[];
-    having?: QBFilterQuery<T>;
+    having?: QBFilterQuery<E>;
     strategy?: LoadStrategy;
     filters?: Dictionary<boolean | Dictionary> | string[] | boolean;
     //lockMode?: Exclude<LockMode, LockMode.OPTIMISTIC>;
@@ -23,11 +23,26 @@ interface StdReadOptions<T, P extends string = never> {
 }
 
 
-/** Additional options for rasmik */
-export interface ReadOptions<T, P extends string = never> extends StdReadOptions<T,P> {
-   loadCustom?: Array<string> //TODO: type the available hooks
-   exclude?: EntityField<T, P>[];
+
+
+export type ReadDefNodeObj<E extends RootEntity> = {
+    include?: readonly (keyof E)[];
+    exclude?: readonly (keyof E)[];
+    children?: Children<E>;
+    loadCustom?: Array<string>;
 }
+export type ReadDefNode<E extends RootEntity> = ReadDefNodeObj<E> | true
+
+type ChildrenMapped<E extends RootEntity> = Partial<{
+    [K in keyof E]: E[K] extends Array<infer U> ? 
+                        U extends RootEntity ?  ReadDefNode<U> : never
+                        :  E[K] extends RootEntity ?  ReadDefNode<E[K]>  : never
+}>
+type Children<E extends RootEntity> = RemoveNever<ChildrenMapped<E>>
+
+
+/** Additional options for rasmik */
+export interface ReadOptions<E extends RootEntity> extends StdReadOptions<E>, ReadDefNodeObj<E> {}
 
 export declare type LoadStrategy  = "select-in" | "joined"
 

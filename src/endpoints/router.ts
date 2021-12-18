@@ -21,8 +21,8 @@ export class RasmikRouter {
         router.delete('*', onlyPostMsg)
 
         for (const crudEndpointDef of metadataStorage.crudEndpoints) {
-            router.post(crudEndpointDef.path + '/:reqType', ...crudEndpointDef.middlewares, this.createHandler(crudEndpointDef))
-            router.post(crudEndpointDef.path, (req: Request, res: Response) => res.status(481).json({ 'error': 'wrong request type. Expected one of https://domain.xx/auto/endpoint/push, readOne, readMany, deleteOne, deleteMany' }))
+            router.post('/crud/' + crudEndpointDef.path + '/:reqType', ...crudEndpointDef.middlewares, this.createHandler(crudEndpointDef))
+            router.post('/crud/' + crudEndpointDef.path, (req: Request, res: Response) => res.status(481).json({ 'error': 'wrong request type. Expected one of https://domain.xx/auto/endpoint/pushOne, pushMany, readOne, readMany, deleteOne, deleteMany' }))
         }
 
         return router
@@ -42,58 +42,63 @@ export class RasmikRouter {
             try {
 
                 if (reqType === 'readOne') {
-                    const foundEntity = await this.rasmik.readOne(def.EntityClass, qry.readWhere, qry.readOptions)
+                    const foundEntity = await this.rasmik.readOne(def.EntityClass).where(qry.readWhere).options(qry.readOptions).run()
                     res.json(foundEntity)
                     return
                 }
 
                 if (reqType === 'readMany') {
-                    const foundEntities = await this.rasmik.readMany(def.EntityClass, qry.readWhere, qry.readOptions)
+                    const foundEntities = await this.rasmik.readMany(def.EntityClass).where(qry.readWhere).options(qry.readOptions).run()
                     res.json(foundEntities)
                     return
                 }
 
                 if (reqType === 'deleteOne') {
-                    const deletedEntity = await this.rasmik.deleteOne(def.EntityClass, qry.deleteWhere, qry.deleteOptions)
+                    const deletedEntity = await this.rasmik.deleteOne(def.EntityClass).where(qry.deleteWhere).options(qry.deleteOptions).run()
                     res.json(deletedEntity)
                     return
                 }
 
                 if (reqType === 'deleteMany') {
-                    const deletedEntities = await this.rasmik.deleteMany(def.EntityClass, qry.deleteWhere, qry.deleteOptions)
+                    const deletedEntities = await this.rasmik.deleteMany(def.EntityClass).where(qry.deleteWhere).options(qry.deleteOptions).run()
                     res.json(deletedEntities)
                     return
                 }
 
-                if (reqType === 'push') {
+                if (reqType === 'pushOne') {
 
                     const em = this.rasmik.em.fork()
 
                     //modifiy data
-                    const nextIdentifier = await this.rasmik.push(def.EntityClass, qry.pushDef, em).fromPojo(qry.data)
+                    const nextIdentifier = await this.rasmik.pushOne(def.EntityClass).pushDef(qry.pushDef).data(qry.data).run(em)
 
                     //Reset the identity map so entities will be queried fully
                     em.clear()
 
 
                     //get something to send back
-                    if (['pk', 'object'].includes(qry.pushDef)) {
+                    const foundEntity = await this.rasmik.readOne(def.EntityClass).where(nextIdentifier).options(qry.readOptions).run()
+                    res.json(foundEntity)
+                }
 
-                        const foundEntity = await this.rasmik.readOne(def.EntityClass, nextIdentifier, qry.readOptions)
-                        res.json(foundEntity)
+                if (reqType === 'pushMany') {
 
-                    } else {
+                    const em = this.rasmik.em.fork()
 
-                        const foundEntities = await this.rasmik.readMany(def.EntityClass, nextIdentifier, qry.readOptions)
-                        res.json(foundEntities)
-                    }
+                    //modifiy data
+                    const nextIdentifiers = await this.rasmik.pushOne(def.EntityClass).pushDef(qry.pushDef).data(qry.data).run(em)
 
+                    //Reset the identity map so entities will be queried fully
+                    em.clear()
+
+                    //get something to send back
+                    const foundEntities = await this.rasmik.readMany(def.EntityClass).where(nextIdentifiers).options(qry.readOptions).run()
+                    res.json(foundEntities)
                 }
 
             } catch (err) {
                 next(err)
             }
-
         }
 
         return handler
@@ -135,7 +140,8 @@ export class RasmikRouter {
                 }
                 return qry;
 
-            case 'push':
+            case 'pushOne':
+            case 'pushMany':
 
                 qry.data = req.body.data
                 qry.pushDef = req.body.pushDef
@@ -149,7 +155,7 @@ export class RasmikRouter {
                 return qry;
 
             default:
-                res.status(481).json({ 'error': 'wrong request type. Expected one of https://domain.xx/auto/endpoint/push, readOne, readMany, deleteOne, deleteMany' })
+                res.status(481).json({ 'error': 'wrong request type. Expected one of https://domain.xx/auto/endpoint/pushOne, pushMany, readOne, readMany, deleteOne, deleteMany' })
                 return
         }
 

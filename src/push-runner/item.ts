@@ -12,7 +12,7 @@ export class Item {
         this.em = this.handler.em
         this.nodeDef = handler.nodeDef
 
-        this.pkVals = this.isObject ? this.nodeDef.pkNames.map(pkName=>data[pkName]) : [data]
+        this.pkVals = this.isObject ? this.nodeDef.pkNames.map(pkName => data[pkName]) : Array.isArray(data) ? data : [data];
         this.index = index
     }//         Object.assign(this, {itemData, nodeHandler, parentItem, mikro: nodeHandler.mikro, Entity:nodeHandler.entity})
 
@@ -65,6 +65,7 @@ export class Item {
 
     private tryGetReference() {
         //if it wasn't created or updated, the entity may not be loaded. If we have its id, we get at least its reference.
+        //const pkObj = Utils.getPrimaryKeyCondFromArray(this.pkVals,this.nodeDef.pkNames) //unline filterQuery, getReference doesn't accept composite pk array
         if (!this.entity && !this.pkVals.some(v=>Utils.isNullish(v))) this.entity = this.em.getReference(this.nodeDef.EntityClass, this.pkVals)
     }
 
@@ -125,7 +126,7 @@ export class Item {
             }
         }
         
-        if(this.nodeDef.updatable && (this.should('update') || this.should('indeterminate')) || Utils.isObject(this.data)){
+        if(this.nodeDef.updatable && (this.should('update') || this.should('indeterminate')) && Utils.isObject(this.data)){
             const missingFields =this.nodeDef.requiredPropsOnUpdate.filter(fieldName=>!Object.keys(this.data).includes(fieldName))
             if(missingFields.length){
                 msgArr.push(`${this.fullItemName} - Champ${missingFields.length > 1 ? "s" : ""} '${missingFields.join(', ')}' obligatoire${missingFields.length > 1 ? "s" : ""}`)
@@ -254,7 +255,7 @@ export class Item {
 
     private  createSubHandler(def: NodeDef, data: any, parentItem:Item , em: EntityManager<any>): SingletonHandler | CollectionHandler {
         
-        if (['id', 'object'].includes(def.nodeType)) {
+        if (['pk', 'object'].includes(def.nodeType)) {
             return new SingletonHandler(def, data, em, parentItem)
         }else{//'ids', 'objects'
             return new CollectionHandler(def, data, em, parentItem)
@@ -262,3 +263,5 @@ export class Item {
     }
 
 }
+
+//TODO: Verifier qu'avec que des refs (donc des entity jamais loadé, le linkage fonctionne. Voir le cas d'un simple link et aussi d''un parent ref avec une collection de pks modifiée)
