@@ -1,4 +1,4 @@
-import { EntityManager, FilterQuery,EntityClass, ServerException } from '@mikro-orm/core'
+import { EntityManager, FilterQuery,EntityClass, ServerException, wrap } from '@mikro-orm/core'
 import { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
 import { Helper } from '../helper'
@@ -23,7 +23,7 @@ export class ReadService extends CrudService {
     }
 
 
-    async readOne() {
+    async readOneEntity() {
         
 
         //throw if not valid
@@ -58,7 +58,7 @@ export class ReadService extends CrudService {
 
     }
 
-    async readMany() {
+    async readManyEntities() {
 
         //throw if not valid
         this.verifyArgs()
@@ -85,6 +85,17 @@ export class ReadService extends CrudService {
 
         return foundEntities
 
+    }
+
+    
+    async readOne() {
+        const entity = await this.readOneEntity()
+        return entity ? wrap(entity).toObject() : null
+    }
+
+    async readMany() {
+        const entities = await this.readManyEntities()
+        return entities && Array.isArray(entities) ? entities.map(entity => wrap(entity).toObject()) : null
     }
 
 

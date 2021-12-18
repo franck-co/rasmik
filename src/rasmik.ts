@@ -5,7 +5,7 @@ import { DeleteService } from './crud/deleteService'
 import { PushService } from './crud/pushService'
 import { RasmikRouter } from './endpoints/router'
 import { Router } from 'express'
-import { ReadLoaded } from './typings/readData'
+import { ReadData, ReadLoaded } from './typings/readData'
 import { DraftData, DraftDef } from './typings/draft'
 import { PickData, PickDef } from './typings/pick'
 
@@ -88,6 +88,42 @@ export class RasmikServer<S extends object> {
             run: async (em: any) => await new ReadService(this, EntityClass, undefined, options, em).readMany() as any,
             where: (where: any) => ({
                 run: async (em: any) => await new ReadService(this, EntityClass, where, options, em).readMany() as any
+            })
+        })
+    })) as any
+
+
+    readOneEntity: ReadOneEntity = ((EntityClass: any) => ({
+
+        where: (where: any) => ({
+            run: async (em: any) =>await new ReadService(this, EntityClass, where, undefined, em).readOneEntity(),
+            options: (options: any) => ({
+                run: async (em: any) =>await new ReadService(this, EntityClass, where, options, em).readOneEntity(),
+            })
+        }),
+
+        options: (options: any) => ({
+            where: (where: any) => ({
+                run: async (em: any) =>await new ReadService(this, EntityClass, where, options, em).readOneEntity(),
+            })
+        })
+    })) as any
+
+
+    readManyEntities: ReadManyEntities = ((EntityClass: any) => ({
+        run: async (em: any) => await new ReadService(this, EntityClass, undefined, undefined, em).readManyEntities() as any,
+        where: (where: any) => ({
+            run: async (em: any) => await new ReadService(this, EntityClass, where, undefined , em).readManyEntities() as any,
+            options: (options: any) => ({
+                // get options() { return options },
+                run: async (em: any) => await new ReadService(this, EntityClass, where, options, em).readManyEntities() as any
+            })
+        }),
+
+        options: (options: any) => ({
+            run: async (em: any) => await new ReadService(this, EntityClass, undefined, options, em).readManyEntities() as any,
+            where: (where: any) => ({
+                run: async (em: any) => await new ReadService(this, EntityClass, where, options, em).readManyEntities() as any
             })
         })
     })) as any
@@ -253,6 +289,46 @@ export class RasmikServer<S extends object> {
 type ReadOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     where(where: FilterQuery<E>): {
+        run(): Promise<ReadData<E>>
+        options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
+            // readonly options: ROpt
+            run(em?:EntityManager<any>): Promise<ReadData<E, ROpt>>
+        }
+    }
+
+    options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
+        // readonly options: ROpt
+        where(where: FilterQuery<E>): {
+            run(em?:EntityManager<any>): Promise<ReadData<E, ROpt>>
+        }
+    }
+
+}
+
+type ReadMany = <E extends RootEntity>(entity: EntityClass<E>) => {
+
+    run(): Promise<Array<ReadData<E>>>
+    where(where: FilterQuery<E>): {
+        run(): Promise<Array<ReadData<E>>>
+        options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
+            // readonly options: ROpt
+            run(em?:EntityManager<any>): Promise<Array<ReadData<E, ROpt>>>
+        }
+    }
+
+    options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
+        // readonly options: ROpt
+        run(em?:EntityManager<any>): Promise<Array<ReadData<E, ROpt>>>
+        where(where: FilterQuery<E>): {
+            run(em?:EntityManager<any>): Promise<Array<ReadData<E, ROpt>>>
+        }
+    }
+
+}
+
+type ReadOneEntity = <E extends RootEntity>(entity: EntityClass<E>) => {
+
+    where(where: FilterQuery<E>): {
         run(): Promise<ReadLoaded<E>>
         options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
@@ -269,7 +345,7 @@ type ReadOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
 }
 
-type ReadMany = <E extends RootEntity>(entity: EntityClass<E>) => {
+type ReadManyEntities = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     run(): Promise<Array<ReadLoaded<E>>>
     where(where: FilterQuery<E>): {
@@ -289,7 +365,6 @@ type ReadMany = <E extends RootEntity>(entity: EntityClass<E>) => {
     }
 
 }
-
 
 
 type DeleteOne = <E extends RootEntity>(entity: EntityClass<E>) => {
