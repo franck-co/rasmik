@@ -36,10 +36,11 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2020",
+    "target": "es5",
     "lib": [
-      "es2020"
+      "esnext"
     ],
+    "importHelpers": true,
     "moduleResolution": "node",
     "declaration": true,
     "sourceMap": false,
