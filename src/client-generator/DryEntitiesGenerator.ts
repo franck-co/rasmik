@@ -1,4 +1,4 @@
-import { ClassDeclaration, InterfaceDeclaration, Node, ObjectLiteralExpression, Project, PropertyDeclaration, PropertySignature, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
+import { ClassDeclaration, CompilerOptions as TsMorphCompilerOptions, InterfaceDeclaration, ModuleKind, ModuleResolutionKind, Node, ObjectLiteralExpression, Project, PropertyDeclaration, PropertySignature, ScriptTarget, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
 import pluralize from 'pluralize'
 
 export interface DryEntitiesGeneratorSettings {
@@ -10,8 +10,41 @@ export interface DryEntitiesGeneratorSettings {
     disableFeedback?:boolean
     noComputedProperties?: boolean
     noTupleTypes?: boolean
+    compilerOptions?: CompilerOptions
 }
 
+export type CompilerOptions = Omit<TsMorphCompilerOptions,'module'|'target'|'moduleResolution'> & {
+    module?: keyof typeof   ModuleKind
+    target?:keyof typeof ScriptTarget
+    moduleResolution?: keyof typeof   ModuleResolutionKind
+}
+
+function transformCompilerOptions(compilerOptions: CompilerOptions): TsMorphCompilerOptions {
+    const options: TsMorphCompilerOptions = compilerOptions as any
+    if (compilerOptions.module) options.module = ModuleKind[compilerOptions.module]
+    if (compilerOptions.module) options.module = ScriptTarget[compilerOptions.module]
+    if (compilerOptions.module) options.module = ModuleResolutionKind[compilerOptions.module]
+    return options
+}
+
+
+const defaultCompilerOptions :TsMorphCompilerOptions= {
+    "module": ModuleKind.CommonJS,
+    "target":ScriptTarget.ES5,
+    "lib": [
+      "esnext"
+    ],
+    "importHelpers": true,
+    "moduleResolution": ModuleResolutionKind.NodeJs,
+    "declaration": true,
+    "sourceMap": false,
+    "strict": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": undefined,
+}
 
 
 export class DryEntitiesGenerator {
@@ -22,6 +55,7 @@ export class DryEntitiesGenerator {
         this.pathToRasmikTypes = settings.pathToRasmikTypes || 'rasmik/dist/typings'
         this.prefix = settings.prefix || ''
         this.emit = settings.emit ?? true 
+        this.compilerOptions = settings.compilerOptions ? transformCompilerOptions(settings.compilerOptions) : defaultCompilerOptions
         this.disableFeedback = settings.disableFeedback ?? false
         this.noComputedProperties =  settings.noComputedProperties ?? false
         this.noTupleTypes =  settings.noTupleTypes ?? false
@@ -35,7 +69,7 @@ export class DryEntitiesGenerator {
     public prefix: string
     public pathToRasmikTypes:string
     public emit:boolean
-
+    public compilerOptions: TsMorphCompilerOptions
 
     private outputFile!: SourceFile
     private projectTypes: Set<TypeAliasDeclaration | ClassDeclaration | InterfaceDeclaration | VariableStatement> = new Set()
@@ -87,7 +121,7 @@ All the types are included.\n`)
         this.project = new Project({
             tsConfigFilePath: 'tsconfig.json',
             skipAddingFilesFromTsConfig: true,
-            compilerOptions:{outDir:undefined, sourceMap:false}
+            compilerOptions:this.compilerOptions
         });
 
         const imports = `

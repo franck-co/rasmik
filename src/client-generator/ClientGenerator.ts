@@ -25,7 +25,8 @@ export class ClientGenerator extends DryEntitiesGenerator {
             prefix: settings.prefix,
             sourcesGlob: settings.sourcesGlob,
             emit: settings.emit,
-            disableFeedback:true
+            disableFeedback:true,
+            compilerOptions:settings.compilerOptions
         })
 
         this.clearOutputDir = settings.clearOutputDir ?? false
@@ -37,7 +38,7 @@ export class ClientGenerator extends DryEntitiesGenerator {
 
 
 
-    public override async generate() {
+    public  async generate() {
 
         this.display('initializing folders ...')
         this.doClearOutputDir()
