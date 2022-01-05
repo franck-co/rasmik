@@ -30,7 +30,7 @@ export class DeleteService  extends CrudService {
 
         let foundEntity:any
         try{
-            foundEntity = await this.rasmik.readOne(this.EntityClass).where(this.where).options(readOptions).run(this.em)
+            foundEntity = await this.rasmik.readOneEntity(this.EntityClass).where(this.where).options(readOptions).run(this.em)
         }catch(err:any){
             if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.findOne")
             else throw new RasmikError(err,"error while running em.findOne")
@@ -62,7 +62,7 @@ export class DeleteService  extends CrudService {
 
         let foundEntities:any[]=[]
         try{
-            foundEntities = await this.rasmik.readMany(this.EntityClass).where(this.where).options(readOptions).run(this.em)
+            foundEntities = await this.rasmik.readManyEntities(this.EntityClass).where(this.where).options(readOptions).run(this.em)
         }catch(err:any){
             if(err instanceof ServerException) throw new RasmikDbError(err,"error while running em.findOne")
             else throw new RasmikError(err,"error while running em.findOne")
