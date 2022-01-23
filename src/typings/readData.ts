@@ -36,16 +36,14 @@ type CludeArrayVals<T extends (Readonly<Array<any>> | undefined)> = unknown exte
 
 type FilteredKeys<E extends RootEntity, Def extends ReadDefNode<E>> =  Def extends true ?  ScalarKey<E> : unknown extends SafeDef<Def>['include']? 
 Exclude<ScalarKey<E>,CludeArrayVals<SafeDef<Def>['exclude']>>
-:Exclude<Extract<CludeArrayVals<SafeDef<Def>['include']>,ScalarKey<E>>,CludeArrayVals<SafeDef<Def>['exclude']>>
+:Exclude<Extract<FinalInclude<E,CludeArrayVals<SafeDef<Def>['include']>>,ScalarKey<E>>,CludeArrayVals<SafeDef<Def>['exclude']>>
 
 
 // type SafeDef<D extends ReadDefNode<any>> = D extends ReadDefNode<infer E> ? D extends  true ? ReadDefNodeObj<E> : D : "never"
 type SafeDef<D extends ReadDefNode<any>> =  D extends  true ? {children:undefined,exclude:undefined, include:undefined,loadCustom:undefined} : D 
 
 
-
-
-
+type FinalInclude<E extends RootEntity,I> =   '*' extends I ? Exclude<I | ScalarKey<E>,'*'> : I
 
 
 /* -- ReadLoaded (entities) -- */

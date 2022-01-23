@@ -39,9 +39,18 @@ export class ReadOptionsHandler {
 
         if(node === true) return defaultFields
 
-        const include:string[] = (node.include || defaultFields) as any 
+        const hasIncludeAll = node.include?.some(x=>x === '*')
+        let include:string[] = (node.include || defaultFields) as any 
         const exclude:string[] = (node.exclude || []) as any
 
+
+        if(hasIncludeAll && node.include){
+            for(const field of defaultFields)
+            if(include.indexOf(field) === -1)
+            include.push(field)
+        }
+
+        include = include.filter(x=>x !== '*') 
 
         const fields :field[] = include.filter(field => !exclude.includes(field))
 

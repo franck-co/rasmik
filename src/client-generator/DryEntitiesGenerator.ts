@@ -202,7 +202,10 @@ All the types are included.\n`)
             })
             .toggleModifier('readonly', !cls.getSetAccessor(getter.getName())).setHasQuestionToken(true)
 
-            
+            /** store standalone types */
+            const originalGetter = sourceCls.getGetAccessor(getter.getName());
+            this.storeUsedTypes(originalGetter!);
+
             cls.getSetAccessor(getter.getName())?.remove()
             getter.remove()
         }

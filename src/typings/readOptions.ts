@@ -19,7 +19,7 @@ export interface DeleteOptions<E extends RootEntity> extends StdReadOptions<E>, 
 
 
 export type ReadDefNodeObj<E extends RootEntity> = {
-    include?: readonly (keyof E)[];
+    include?: readonly (keyof E | '*')[];
     exclude?: readonly (keyof E)[];
     children?: ReadChildren<E>;
     loadCustom?: readonly (keyof E)[];

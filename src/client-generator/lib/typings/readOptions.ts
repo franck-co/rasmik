@@ -26,7 +26,7 @@ interface StdReadOptions<E extends RootEntity> {
 
 
 export type ReadDefNodeObj<E extends RootEntity> = {
-    include?: readonly (keyof E)[];
+    include?: readonly (keyof E | '*')[];
     exclude?: readonly (keyof E)[];
     children?: Children<E>;
     loadCustom?: Array<string>;
