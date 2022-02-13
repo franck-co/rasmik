@@ -30,12 +30,16 @@ export class ReadOptionsHandler {
         return populate
     }
 
-    getFields(node:ReadOptions<any> | true = this.options, meta:EntityMetadata = this.EntityClass.prototype.__meta){
+    getFields(node: ReadOptions<any> | true = this.options, meta: EntityMetadata = this.EntityClass.prototype.__meta) {
 
+        //must select all fields with sto
+        if (meta.discriminatorMap) {
+            return ['*']
+        }
 
-        type field = string|{[key:string]:Array<field>}
+        type field = string | { [key: string]: Array<field> }
 
-        const defaultFields=meta.hydrateProps.filter(prop => !prop.lazy  && !(prop.reference === "1:m" || prop.reference === "m:n") && !(prop.reference === '1:1' && !prop.owner)).map(prop => prop.name)  as string[]
+        const defaultFields = meta.hydrateProps.filter(prop => !prop.lazy  && !(prop.reference === "1:m" || prop.reference === "m:n") && !(prop.reference === '1:1' && !prop.owner)).map(prop => prop.name)  as string[]
 
         if(node === true) return defaultFields
 
