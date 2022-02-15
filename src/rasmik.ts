@@ -289,7 +289,7 @@ export class RasmikServer<S extends object> {
 type ReadOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     where(where: FilterQuery<E>): {
-        run(): Promise<ReadData<E>>
+        run(em?:EntityManager<any>): Promise<ReadData<E>>
         options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<ReadData<E, ROpt>>
@@ -307,9 +307,9 @@ type ReadOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
 type ReadMany = <E extends RootEntity>(entity: EntityClass<E>) => {
 
-    run(): Promise<Array<ReadData<E>>>
+    run(em?:EntityManager<any>): Promise<Array<ReadData<E>>>
     where(where: FilterQuery<E>): {
-        run(): Promise<Array<ReadData<E>>>
+        run(em?:EntityManager<any>): Promise<Array<ReadData<E>>>
         options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<Array<ReadData<E, ROpt>>>
@@ -329,7 +329,7 @@ type ReadMany = <E extends RootEntity>(entity: EntityClass<E>) => {
 type ReadOneEntity = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     where(where: FilterQuery<E>): {
-        run(): Promise<ReadLoaded<E>>
+        run(em?:EntityManager<any>): Promise<ReadLoaded<E>>
         options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<ReadLoaded<E, ROpt>>
@@ -347,9 +347,9 @@ type ReadOneEntity = <E extends RootEntity>(entity: EntityClass<E>) => {
 
 type ReadManyEntities = <E extends RootEntity>(entity: EntityClass<E>) => {
 
-    run(): Promise<Array<ReadLoaded<E>>>
+    run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E>>>
     where(where: FilterQuery<E>): {
-        run(): Promise<Array<ReadLoaded<E>>>
+        run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E>>>
         options <ROpt extends ReadOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, ReadOptions<E>> extends true ? ExtraKeysMsg<ROpt, ReadOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E, ROpt>>>
@@ -370,7 +370,7 @@ type ReadManyEntities = <E extends RootEntity>(entity: EntityClass<E>) => {
 type DeleteOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     where(where: FilterQuery<E>): {
-        run(): Promise<ReadLoaded<E>>
+        run(em?:EntityManager<any>): Promise<ReadLoaded<E>>
         options <ROpt extends DeleteOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, DeleteOptions<E>> extends true ? ExtraKeysMsg<ROpt, DeleteOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<ReadLoaded<E, ROpt>>
@@ -388,9 +388,9 @@ type DeleteOne = <E extends RootEntity>(entity: EntityClass<E>) => {
 
 type DeleteMany = <E extends RootEntity>(entity: EntityClass<E>) => {
 
-    run(): Promise<Array<ReadLoaded<E>>>
+    run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E>>>
     where(where: FilterQuery<E>): {
-        run(): Promise<Array<ReadLoaded<E>>>
+        run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E>>>
         options <ROpt extends DeleteOptions<E>>(options: Readonly<ROpt>): HasExtraKeys<ROpt, DeleteOptions<E>> extends true ? ExtraKeysMsg<ROpt, DeleteOptions<E>, 'ROpt has extra properties :'> : {
             // readonly options: ROpt
             run(em?:EntityManager<any>): Promise<Array<ReadLoaded<E, ROpt>>>
@@ -422,7 +422,7 @@ type PushMany = <E extends RootEntity>(entity: EntityClass<E>) => {
 
     pushDef <PDef extends PushDef<E>>(pushDef: Readonly<PDef>) : HasExtraKeys<PDef, PushDef<E>> extends true ? ExtraKeysMsg<PDef, PushDef<E>, 'PDef has extra properties :'> : {
 
-        data <Data extends PushData<E, PDef>>(data: Readonly<Data>): HasExtraKeys<Data, PushData<E, PDef>> extends true ? ExtraKeysMsg<Data, PushData<E, PDef>, 'Data has extra properties :'> : {
+        data <Data extends PushData<E, PDef>>(data: Array<Readonly<Data>>): HasExtraKeys<Data, PushData<E, PDef>> extends true ? ExtraKeysMsg<Data, PushData<E, PDef>, 'Data has extra properties :'> : {
             run(em?:EntityManager<any>): Promise<Array<Primary<E>> | undefined>
         }
     }
