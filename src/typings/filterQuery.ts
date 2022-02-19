@@ -1,4 +1,4 @@
-import { ExpandProperty } from '@mikro-orm/core/dist/typings';
+import { ExpandProperty } from '@mikro-orm/core/typings';
 import { Dictionary,  ExpandScalar, Primary, Scalar } from './utility';
 
 

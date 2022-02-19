@@ -34,7 +34,7 @@ export class ReadOptionsHandler {
 
         //must select all fields with sto
         if (meta.discriminatorMap) {
-            return ['*']
+            return []
         }
 
         type field = string | { [key: string]: Array<field> }

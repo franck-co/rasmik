@@ -1,5 +1,5 @@
 import { Collection, FindOptions as StdReadOptions} from '@mikro-orm/core';
-import { AutoPath } from '@mikro-orm/core/dist/typings';
+import { AutoPath } from '@mikro-orm/core/typings';
 import { RemoveNever } from './utility';
 import { RootEntity } from './utility';
 

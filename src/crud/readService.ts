@@ -89,13 +89,15 @@ export class ReadService extends CrudService {
 
     
     async readOne() {
+        const populate = this.optionsHandler.getPopulate()
         const entity = await this.readOneEntity()
-        return entity ? wrap(entity).toObject() : null
+        return entity ? wrap(entity).toJSON(populate) : null
     }
 
     async readMany() {
+        const populate = this.optionsHandler.getPopulate()
         const entities = await this.readManyEntities()
-        return entities && Array.isArray(entities) ? entities.map(entity => wrap(entity).toObject()) : null
+        return entities && Array.isArray(entities) ? entities.map(entity => wrap(entity).toJSON(populate)) : null
     }
 
 

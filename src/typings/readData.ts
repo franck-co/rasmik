@@ -1,5 +1,5 @@
 import { Collection, Loaded } from '@mikro-orm/core';
-import { ExpandProperty } from '@mikro-orm/core/dist/typings';
+import { ExpandProperty } from '@mikro-orm/core/typings';
 import { RemoveNever } from '.';
 import { ReadDefNode } from './readOptions';
 import { Primary, RootEntity, ScalarKey, RelationKey } from './utility'

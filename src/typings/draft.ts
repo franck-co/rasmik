@@ -1,7 +1,7 @@
 import {  HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
 import {  RemoveNever } from './utility'
 import { RegularExpressionLiteral } from 'ts-morph'
-import { ExpandProperty } from '@mikro-orm/core/dist/typings'
+import { ExpandProperty } from '@mikro-orm/core/typings'
 import { Collection } from '@mikro-orm/core'
 
 const allowOptions = ['ref' , 'upsert' , 'create' , 'update', 'pk'] as const 
