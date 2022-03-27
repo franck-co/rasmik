@@ -32,6 +32,7 @@ export class ReadService extends CrudService {
 
         let foundEntity: any
         try {
+            //@ts-ignore
             foundEntity = await this.em.findOne(this.EntityClass, this.where, this.optionsHandler.getFindOptions())
         } catch (err:any) {
             console.error(err)

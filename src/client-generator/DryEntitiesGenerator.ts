@@ -226,7 +226,7 @@ All the types are included.\n`)
                 isStatic: true,
                 name: '__path',
                 initializer: `${trimSlashes(pathValue)}`,
-            }).toggleModifier('private', true)
+            }).toggleModifier('protected', true)
 
             crudEndpointDecorator.remove()
         }
