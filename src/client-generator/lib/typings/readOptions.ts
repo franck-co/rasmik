@@ -1,5 +1,5 @@
-import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey } from './utility';
-import {QBFilterQuery} from './filterQuery'
+import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey, PopulateHint } from './utility';
+import {QBFilterQuery, FilterQuery} from './filterQuery'
 
 interface StdReadOptions<E extends RootEntity> {
     //populate?: readonly AutoPath<T, P>[] | boolean;
@@ -20,6 +20,7 @@ interface StdReadOptions<E extends RootEntity> {
     //lockMode?: Exclude<LockMode, LockMode.OPTIMISTIC>;
     //lockTableAliases?: string[];
     //ctx?: Transaction;
+    populateWhere?:FilterQuery<E> | PopulateHint
 }
 
 

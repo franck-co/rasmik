@@ -36,7 +36,10 @@ export type Primary<T> = T extends {
 
 type ReadonlyPrimary<T> = T extends any[] ? Readonly<T> : T;
 
-
+export declare enum PopulateHint {
+    INFER = 0,
+    ALL = 1
+}
 
 
 /** First word in a populaet path */
