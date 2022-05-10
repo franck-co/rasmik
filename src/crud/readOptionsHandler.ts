@@ -9,7 +9,7 @@ export class ReadOptionsHandler {
 
     getFindOptions(){
         const {children,loadCustom,exclude,...findOptions} = this.options
-        findOptions.populate = this.getPopulate(this.options as any) as any
+        findOptions.populate = Array.from(new Set([...this.getFields(), ...this.getPopulate(this.options as any)])) as any
         findOptions.fields = this.getFields()
         return findOptions
     }
@@ -62,10 +62,9 @@ export class ReadOptionsHandler {
         Object.keys(node.children || {}).forEach(childPropName=>{
 
             const childMeta = meta.relations?.find(rel => rel.name === childPropName)?.targetMeta?.class?.prototype.__meta
-            const childDef = {
-                [childPropName]:this.getFields(node.children![childPropName], childMeta)
-            }
-            fields.push(childDef)
+            const childFields = this.getFields(node.children![childPropName], childMeta)
+            const chainedChildFields = childFields?.map(field=>`${childPropName}.${field}`) || []
+            fields.push(...chainedChildFields)
         })
       
         return fields
