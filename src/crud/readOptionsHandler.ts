@@ -9,8 +9,14 @@ export class ReadOptionsHandler {
 
     getFindOptions(){
         const {children,loadCustom,exclude,...findOptions} = this.options
-        findOptions.populate = Array.from(new Set([...this.getFields(), ...this.getPopulate(this.options as any)])) as any
-        findOptions.fields = this.getFields()
+
+        const lazyFields = this.getLazyFields()
+        const fields = this.getFields()
+        const populate = this.getPopulate(this.options as any)
+
+        findOptions.populate = [...lazyFields, ...populate] as any  //Array.from(new Set([...this.getFields(), ...this.getPopulate(this.options as any)])) as any
+        findOptions.fields = fields
+        
         return findOptions
     }
 
@@ -43,20 +49,22 @@ export class ReadOptionsHandler {
 
         if(node === true) return defaultFields
 
-        const hasIncludeAll = node.include?.some(x=>x === '*')
-        let include:string[] = (node.include || defaultFields) as any 
-        const exclude:string[] = (node.exclude || []) as any
+        const hasIncludeAll = node.include?.some(x => x === '*')
+        let include: string[] = (node.include || defaultFields) as any
+        const exclude: string[] = (node.exclude || []) as any
 
 
-        if(hasIncludeAll && node.include){
-            for(const field of defaultFields)
-            if(include.indexOf(field) === -1)
-            include.push(field)
+        if (hasIncludeAll && node.include) {
+            for (const field of defaultFields) {
+                if (include.indexOf(field) === -1)
+                    include.push(field)
+            }
         }
 
-        include = include.filter(x=>x !== '*') 
+        const allLazyFields = meta.hydrateProps.filter(prop=>prop.lazy).map(prop => prop.name)
+        include = include.filter(x => x !== '*' && !allLazyFields.includes(x))
 
-        const fields :field[] = include.filter(field => !exclude.includes(field))
+        const fields: field[] = include.filter(field => !exclude.includes(field))
 
 
         Object.keys(node.children || {}).forEach(childPropName=>{
@@ -68,6 +76,41 @@ export class ReadOptionsHandler {
         })
       
         return fields
+    }
+
+    //The order of the fields in populate is important. lazy fields on child entities are ignored if not at the beginnig of the populate array
+    getLazyFields(node: ReadOptions<any> | true = this.options, meta: EntityMetadata = this.EntityClass.prototype.__meta) {
+
+        //must select all fields with sto
+        if (meta.discriminatorMap) {
+            return []
+        }
+
+        const allLazyFields = meta.hydrateProps.filter(prop=>prop.lazy).map(prop => prop.name)
+
+        type field = string | { [key: string]: Array<field> }
+
+        const defaultFields = []  as string[]
+
+        if(node === true) return []
+
+        let include: string[] = (node.include || []) as any 
+        const exclude:string[] = (node.exclude || []) as any
+
+        include = include.filter(x=>x !== '*') 
+
+        const lazyFields :field[] = include.filter(field => !exclude.includes(field) && allLazyFields.includes(field))
+
+
+        Object.keys(node.children || {}).forEach(childPropName=>{
+
+            const childMeta = meta.relations?.find(rel => rel.name === childPropName)?.targetMeta?.class?.prototype.__meta
+            const childFields = this.getLazyFields(node.children![childPropName], childMeta)
+            const chainedChildFields = childFields?.map(field=>`${childPropName}.${field}`) || []
+            lazyFields.push(...chainedChildFields)
+        })
+      
+        return lazyFields
     }
 }
 
