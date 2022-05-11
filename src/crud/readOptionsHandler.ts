@@ -15,8 +15,8 @@ export class ReadOptionsHandler {
         const populate = this.getPopulate(this.options as any)
 
         findOptions.populate = [...lazyFields, ...populate] as any  //Array.from(new Set([...this.getFields(), ...this.getPopulate(this.options as any)])) as any
-        findOptions.fields = fields
-        
+        findOptions.fields = [...lazyFields,...fields]
+
         return findOptions
     }
 
