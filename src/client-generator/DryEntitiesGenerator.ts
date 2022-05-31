@@ -22,8 +22,8 @@ export type CompilerOptions = Omit<TsMorphCompilerOptions,'module'|'target'|'mod
 function transformCompilerOptions(compilerOptions: CompilerOptions): TsMorphCompilerOptions {
     const options: TsMorphCompilerOptions = compilerOptions as any
     if (compilerOptions.module) options.module = ModuleKind[compilerOptions.module]
-    if (compilerOptions.module) options.module = ScriptTarget[compilerOptions.module]
-    if (compilerOptions.module) options.module = ModuleResolutionKind[compilerOptions.module]
+    if (compilerOptions.target) options.target = ScriptTarget[compilerOptions.target]
+    if (compilerOptions.moduleResolution) options.moduleResolution = ModuleResolutionKind[compilerOptions.moduleResolution]
     return options
 }
 
