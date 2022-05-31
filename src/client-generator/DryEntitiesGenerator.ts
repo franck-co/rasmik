@@ -1,9 +1,11 @@
 import { ClassDeclaration, CompilerOptions as TsMorphCompilerOptions, InterfaceDeclaration, ModuleKind, ModuleResolutionKind, Node, ObjectLiteralExpression, Project, PropertyDeclaration, PropertySignature, ScriptTarget, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
 import pluralize from 'pluralize'
+import path from 'path'
 
 export interface DryEntitiesGeneratorSettings {
     sourcesGlob?: string | string[]
-    outputFilePathRel:string
+    outDir:string
+    entitiesOutputFileName?:string
     prefix?: string
     pathToRasmikTypes?:string
     emit?:boolean
@@ -50,20 +52,22 @@ const defaultCompilerOptions :TsMorphCompilerOptions= {
 export class DryEntitiesGenerator {
     constructor(settings: DryEntitiesGeneratorSettings) {
 
-        this.outputFilePathRel = settings.outputFilePathRel
+        
+        this.entitiesOutputFileName = settings.entitiesOutputFileName || 'entities.ts'
         this.sourcesGlob =  settings.sourcesGlob || ['src/entities/**/*.ts']
         this.pathToRasmikTypes = settings.pathToRasmikTypes || 'rasmik/dist/typings'
         this.prefix = settings.prefix || ''
         this.emit = settings.emit ?? true 
         this.compilerOptions = settings.compilerOptions ? transformCompilerOptions(settings.compilerOptions) : defaultCompilerOptions
+        this.outDir = settings.outDir
+        this.compilerOptions.outDir = settings.outDir
         this.disableFeedback = settings.disableFeedback ?? false
         this.noComputedProperties =  settings.noComputedProperties ?? false
         this.noTupleTypes =  settings.noTupleTypes ?? false
-
-        if(this.outputFilePathRel.endsWith('/')) this.outputFilePathRel = this.outputFilePathRel.slice(0,- 1)
     }
 
-    public outputFilePathRel: string
+    public outDir:string
+    public entitiesOutputFileName: string
     public sourcesGlob: string | string[]
     //public endpointsDirGlob: string | string[]
     public prefix: string
@@ -71,8 +75,8 @@ export class DryEntitiesGenerator {
     public emit:boolean
     public compilerOptions: TsMorphCompilerOptions
 
-    private outputFile!: SourceFile
-    private projectTypes: Set<TypeAliasDeclaration | ClassDeclaration | InterfaceDeclaration | VariableStatement> = new Set()
+    protected outputFile!: SourceFile
+    protected projectTypes: Set<TypeAliasDeclaration | ClassDeclaration | InterfaceDeclaration | VariableStatement> = new Set()
     protected project!: Project
 
     protected excluded: string[]= []
@@ -104,7 +108,7 @@ export class DryEntitiesGenerator {
         }
 
         if(this.disableFeedback)return
-this.display(`Dry entities generated succesfully at ${this.outputFilePathRel} !` + (this.excluded.length ? `
+this.display(`Dry entities generated succesfully at ${this.outDir} !` + (this.excluded.length ? `
 ${this.excluded.length} types couldn't be included because they are too dependant on other types :
 
 ${this.excluded.join('\n')}
@@ -121,7 +125,7 @@ All the types are included.\n`)
         this.project = new Project({
             tsConfigFilePath: 'tsconfig.json',
             skipAddingFilesFromTsConfig: true,
-            compilerOptions:this.compilerOptions
+            compilerOptions:this.compilerOptions,
         });
 
         const imports = `
@@ -130,7 +134,8 @@ All the types are included.\n`)
         
         
         `
-        this.outputFile = this.project.createSourceFile( this.outputFilePathRel, imports, { overwrite: true })
+        const outputFileFullPath = this.emit ? this.entitiesOutputFileName : path.join(this.outDir, this.entitiesOutputFileName)
+        this.outputFile = this.project.createSourceFile( outputFileFullPath, imports, { overwrite: true })
     }
 
     protected processEntitiesDir() {
