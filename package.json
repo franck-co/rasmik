@@ -1,6 +1,6 @@
 {
   "name": "rasmik",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Routes And Services for MikroORM",
   "author": "franck-co",
   "license": "MIT",
@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsc",
+    "build": "tsc && cp -r src/client-generator/lib dist/client-generator/lib",
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsc"
