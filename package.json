@@ -1,6 +1,6 @@
 {
   "name": "rasmik",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Routes And Services for MikroORM",
   "author": "franck-co",
   "license": "MIT",
