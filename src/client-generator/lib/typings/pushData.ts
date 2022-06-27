@@ -3,8 +3,9 @@ import {  PushDefNodeObject, PushDefNodeObjects, PushDefNodePk, PushDefNodePks, 
 import { AllowOption, PushDefNode } from './pushDef'
 
 
-export type PushData<E extends RootEntity, Def extends PushDefNode<E>, Arr = {}> 
-= Arr extends Array<any> ?  Array<PushDataItem<E,Def>> : PushDataItem<E,Def>
+export type PushData<E extends RootEntity, Def extends PushDefNode<E>, Prev = {}> =
+ Prev extends Array<infer U> ? null extends U ?  Array<PushDataItem<E,Def> | null> :  Array<PushDataItem<E,Def>> 
+:  null extends Prev ?  PushDataItem<E,Def> | null :  PushDataItem<E,Def>
 
 
 

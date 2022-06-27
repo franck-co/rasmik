@@ -52,7 +52,8 @@ export type Suffix<K> = K extends `${string}.${infer S}` ? S : never;
 export type Defined<T> = Exclude<T, undefined>;
 
 
-
+export type NotNil<T> = Exclude<T,null | undefined>
+export type NotUndefined<T> = Exclude<T, undefined>
 
 /** Array and non array on the same level */
 export declare type ExpandProperty<T> =  T extends (infer U)[] ? NonNullable<U> : NonNullable<T>;

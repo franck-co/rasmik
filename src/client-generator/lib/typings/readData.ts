@@ -1,31 +1,31 @@
 
 
 
-import { ExpandProperty, HasCompositePk, PkKeys, ScalarKey, RelationKey } from './utility'
+import { ExpandProperty, HasCompositePk, PkKeys, ScalarKey, RelationKey, NotUndefined } from './utility'
 import { ReadDefNode, ReadDefNodeObj } from './readOptions';
 
 
 
 export type ReadData<E extends RootEntity, Def extends ReadDefNode<E> = true> = RemoveNever<
-    //Populated entitie expliciely in children
-    {
-    [K in Extract<keyof SafeDef<Def>['children'], keyof E> ]: ExpandProperty<E[K]> extends RootEntity ?
-                                                                SafeDef<Def>['children'][K] extends ReadDefNode<ExpandProperty<E[K]>> ? 
-                                                                    E[K] extends Array<any> ? 
-                                                                    Array<ReadData<ExpandProperty<E[K]>,SafeDef<Def>['children'][K]>>
-                                                                    : ReadData<ExpandProperty<E[K]>,SafeDef<Def>['children'][K]> 
-                                                                : never 
-                                                              : never
-    }
-    &
-    //Not populated => pk always there for OneToOne and ManyToOne 
-    {
-        [K in Exclude<RelationKey<E>,keyof SafeDef<Def>['children']>]: E[K] extends Array<any> ? never : Primary<E[K]>
-    }
-    &
-    {
-        [K in  FilteredKeys<E,Def> ]: E[K]
-    }>
+//Populated entitie expliciely in children
+{
+[K in Extract<keyof SafeDef<Def>['children'], keyof E> ]: ExpandProperty<E[K]> extends RootEntity ?
+                                                            SafeDef<Def>['children'][K] extends ReadDefNode<ExpandProperty<E[K]>> ? 
+                                                                NotUndefined<E[K]> extends Array<any> ? 
+                                                                Array<ReadData<ExpandProperty<E[K]>,SafeDef<Def>['children'][K]>>
+                                                                : null extends E[K] ? ReadData<ExpandProperty<E[K]>, SafeDef<Def>['children'][K]> | null : ReadData<ExpandProperty<E[K]>, SafeDef<Def>['children'][K]>
+                                                            : never 
+                                                          : never
+}
+&
+//Not populated => pk always there for OneToOne and ManyToOne 
+{
+    [K in Exclude<RelationKey<E>,keyof SafeDef<Def>['children']>]: E[K]  extends Array<any> ? never : null extends E[K]  ? Primary<E[K]> | null : Primary<E[K]>
+}
+&
+{
+    [K in  FilteredKeys<E,Def> ]: NotUndefined<E[K]>
+}>
 
 type CludeArrayVals<T extends (Readonly<Array<any>> | undefined)> = unknown extends T  ? never : T extends Required<T> ? T[number] : never
 

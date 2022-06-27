@@ -1,5 +1,5 @@
 
-import { EntityField, RootEntity, RemoveNever } from './utility';
+import { EntityField, RootEntity, RemoveNever, NotUndefined, NotNil } from './utility';
 
 
 
@@ -12,15 +12,17 @@ export type CollectionMode =  typeof collectionModes[number]
 
 
 type ChildrenMapped<E extends RootEntity> = Partial<{
-    [K in keyof E]: E[K] extends Array<infer U> ? 
-                        U extends RootEntity ? 
-                            PushDefNodeObjects<U> | PushDefNodePks<U> 
-                            : never
-                        :  E[K] extends RootEntity ?
-                        PushDefNodeObject<E[K]> | PushDefNodePk<E[K]> 
-                        : never
-}>
+    [K in keyof E]: NotUndefined<E[K]> extends Array<infer U> ?
+                        NotNil<U> extends RootEntity ? 
+                            PushDefNodeObjects<NotNil<U>> | PushDefNodePks<NotNil<U>>
+                            : never 
+                        : NotNil<E[K]> extends RootEntity ? 
+                        PushDefNodeObject<NotNil<E[K]>> | PushDefNodePk<NotNil<E[K]>> 
+                        : never;
+}>;
 type Children<E extends RootEntity> = RemoveNever<ChildrenMapped<E>>
+
+
 
 
 interface PushDefNodeCommon<E extends RootEntity> {

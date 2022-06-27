@@ -195,6 +195,11 @@ All the types are included.\n`)
             prop.getDecorators().forEach(dec => dec.remove())
             prop.removeInitializer()
 
+            if(originalProp!.hasQuestionToken()){
+               const typeText = prop.getTypeNode()?.getText()
+                prop.setType(typeText ? `${typeText} | null` : "any | null")
+            }
+
             prop.setHasQuestionToken(true)
         }
 

@@ -1,4 +1,4 @@
-import { ExpandProperty, HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
+import { ExpandProperty, HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey, NotUndefined } from './utility'
 
 
 
@@ -54,7 +54,7 @@ type PickDataObject<E extends RootEntity, Def extends PickDefObject<E>> =
 
 & //required own props (apart from pks)
 {
-    [K in FilteredRequiredScalarKey<E,Def>]-?: E[K]
+    [K in FilteredRequiredScalarKey<E,Def>]-?: NotUndefined<E[K]>
 }
 
 & //optional own props (apart from pks and forbidden)

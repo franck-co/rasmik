@@ -1,4 +1,4 @@
-import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey, PopulateHint } from './utility';
+import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey, PopulateHint, NotNil, RelationKey, NotUndefined } from './utility';
 import {QBFilterQuery, FilterQuery} from './filterQuery'
 
 interface StdReadOptions<E extends RootEntity> {
@@ -35,10 +35,10 @@ export type ReadDefNodeObj<E extends RootEntity> = {
 export type ReadDefNode<E extends RootEntity> = ReadDefNodeObj<E> | true
 
 type ChildrenMapped<E extends RootEntity> = Partial<{
-    [K in keyof E]: E[K] extends Array<infer U> ? 
-                        U extends RootEntity ?  ReadDefNode<U> : never
-                        :  E[K] extends RootEntity ?  ReadDefNode<E[K]>  : never
-}>
+    [K in RelationKey<E>]: NotUndefined<E[K]> extends Array<infer U> ? 
+                        NotNil<U> extends RootEntity ?  ReadDefNode<NotNil<U>> : never
+                        :   NotNil<E[K]> extends RootEntity ?  ReadDefNode< NotNil<E[K]>>  : never
+}>;
 type Children<E extends RootEntity> = RemoveNever<ChildrenMapped<E>>
 
 
