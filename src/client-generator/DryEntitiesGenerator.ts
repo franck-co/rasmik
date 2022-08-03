@@ -201,6 +201,7 @@ All the types are included.\n`)
             }
 
             prop.setHasQuestionToken(true)
+            if (!prop.hasModifier('static')) prop.setHasDeclareKeyword(true)
         }
 
         /** treat accessors */
