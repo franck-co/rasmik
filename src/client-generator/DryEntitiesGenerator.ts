@@ -201,7 +201,10 @@ All the types are included.\n`)
             }
 
             prop.setHasQuestionToken(true)
-            if (!prop.hasModifier('static')) prop.setHasDeclareKeyword(true)
+            if (!prop.hasModifier('static')) {
+                prop.setHasDeclareKeyword(true)
+                prop.setHasOverrideKeyword(false)
+            }
         }
 
         /** treat accessors */
