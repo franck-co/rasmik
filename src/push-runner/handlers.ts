@@ -52,6 +52,15 @@ export class SingletonHandler extends Handler {
         //linking item to parent
         parentEntity[this.nodeDef.propertyName!] = this.item.entity
 
+        const propertyDef = this.parentItem!.nodeDef.EntityMeta.properties[this.nodeDef.propertyName!]
+        
+        //link on owning side (propagation only works when assigning to the owning side)
+        if(this.item.entity && this.item.entity instanceof this.item.nodeDef.EntityClass && propertyDef.owner == false){
+
+            //it's never a collection because it's the owning side (that owns the fk)
+            this.item.entity[propertyDef.mappedBy] = parentEntity
+        }
+
         // const oldEntity = parentEntity[this.nodeDef.propertyName!]
         // if(this.nodeDef.deleteOrphans && oldEntity && oldEntity !== this.item.entity){
         //     console.log('old entity deleted')
