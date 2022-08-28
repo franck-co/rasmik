@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsc && cp -r src/client-generator/lib dist/client-generator/lib",
+    "build": "tsc && cp -r src/client-generator/lib dist/client-generator/",
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsc"
