@@ -1,4 +1,4 @@
-import { Dictionary, ExpandProperty, ExpandScalar, Primary, Scalar } from './utility';
+import type { Dictionary, ExpandProperty, ExpandScalar, Primary, Scalar } from './utility';
 
 
 export declare type FilterValue2<T> = T | ExpandScalar<T> | Primary<T>;
@@ -33,6 +33,6 @@ export declare type OperatorMap<T> = {
 export declare type Query<T> = T extends object ? T extends Scalar ? never : FilterQuery<T> : FilterValue<T>;
 
 
-export  type ObjectQuery<T> = ExpandObject<T> & OperatorMap<T>;
-export  type FilterQuery<T> = ObjectQuery<T> | NonNullable<ExpandScalar<Primary<T>>> | T | FilterQuery<T>[];
+export type ObjectQuery<T> = ExpandObject<T> & OperatorMap<T>;
+export type FilterQuery<T> = ObjectQuery<T> | NonNullable<ExpandScalar<Primary<T>>> | T | FilterQuery<T>[];
 export type QBFilterQuery<T = any> = FilterQuery<T> | Dictionary;

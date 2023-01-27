@@ -1,4 +1,4 @@
-import { FilterQuery, ReadOptions, Populated, ReadData, EntityClass, PushData, RootEntity, PushDef, NoExcess, DraftDef, DraftData, PickDef, PickData } from './typings';
+import type { FilterQuery, ReadOptions, Populated, ReadData, EntityClass, PushData, RootEntity, PushDef, NoExcess, DraftDef, DraftData, PickDef, PickData } from './typings';
 
 
 

@@ -1,5 +1,5 @@
 
-import { EntityField, RootEntity, RemoveNever, NotUndefined, NotNil } from './utility';
+import type { EntityField, RootEntity, RemoveNever, NotUndefined, NotNil } from './utility';
 
 
 

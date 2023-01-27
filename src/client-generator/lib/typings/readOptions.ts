@@ -1,5 +1,5 @@
-import { ExpandProperty, Dictionary,  RootEntity, RemoveNever,ScalarKey, PopulateHint, NotNil, RelationKey, NotUndefined } from './utility';
-import {QBFilterQuery, FilterQuery} from './filterQuery'
+import type { ExpandProperty, Dictionary, RootEntity, RemoveNever, ScalarKey, PopulateHint, NotNil, RelationKey, NotUndefined } from './utility';
+import type { QBFilterQuery, FilterQuery } from './filterQuery'
 
 interface StdReadOptions<E extends RootEntity> {
     //populate?: readonly AutoPath<T, P>[] | boolean;
@@ -20,7 +20,7 @@ interface StdReadOptions<E extends RootEntity> {
     //lockMode?: Exclude<LockMode, LockMode.OPTIMISTIC>;
     //lockTableAliases?: string[];
     //ctx?: Transaction;
-    populateWhere?:FilterQuery<E> | PopulateHint
+    populateWhere?: FilterQuery<E> | PopulateHint
 }
 
 
@@ -35,17 +35,17 @@ export type ReadDefNodeObj<E extends RootEntity> = {
 export type ReadDefNode<E extends RootEntity> = ReadDefNodeObj<E> | true
 
 type ChildrenMapped<E extends RootEntity> = Partial<{
-    [K in RelationKey<E>]: NotUndefined<E[K]> extends Array<infer U> ? 
-                        NotNil<U> extends RootEntity ?  ReadDefNode<NotNil<U>> : never
-                        :   NotNil<E[K]> extends RootEntity ?  ReadDefNode< NotNil<E[K]>>  : never
+    [K in RelationKey<E>]: NotUndefined<E[K]> extends Array<infer U> ?
+    NotNil<U> extends RootEntity ? ReadDefNode<NotNil<U>> : never
+    : NotNil<E[K]> extends RootEntity ? ReadDefNode<NotNil<E[K]>> : never
 }>;
 type Children<E extends RootEntity> = RemoveNever<ChildrenMapped<E>>
 
 
 /** Additional options for rasmik */
-export interface ReadOptions<E extends RootEntity> extends StdReadOptions<E>, ReadDefNodeObj<E> {}
+export interface ReadOptions<E extends RootEntity> extends StdReadOptions<E>, ReadDefNodeObj<E> { }
 
-export declare type LoadStrategy  = "select-in" | "joined"
+export declare type LoadStrategy = "select-in" | "joined"
 
 
 export declare type QueryFlag = "DISTINCT" | "PAGINATE" | "UPDATE_SUB_QUERY" | "DELETE_SUB_QUERY" | "CONVERT_CUSTOM_TYPES" | "INCLUDE_LAZY_FORMULAS" | "AUTO_JOIN_ONE_TO_ONE_OWNER"
