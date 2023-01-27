@@ -1,8 +1,6 @@
 import path from 'path'
-import mkdirp from 'mkdirp'
 import { execSync } from 'child_process';
 import { DryEntitiesGenerator, DryEntitiesGeneratorSettings } from './DryEntitiesGenerator';
-import fs from 'fs'
 import { Node } from 'ts-morph';
 // import libClient from './lib/client'
 // import libRasmikTypes from './lib/rasmikTypes'

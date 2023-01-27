@@ -1,4 +1,4 @@
-import { ClassDeclaration, CompilerOptions as TsMorphCompilerOptions, InterfaceDeclaration, ModuleKind, ModuleResolutionKind, Node, ObjectLiteralExpression, Project, PropertyDeclaration, PropertySignature, ScriptTarget, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
+import { ClassDeclaration, CompilerOptions as TsMorphCompilerOptions, InterfaceDeclaration, ModuleKind, ModuleResolutionKind, Node, ObjectLiteralExpression, Project, ScriptTarget, SourceFile, SyntaxKind, Type, TypeAliasDeclaration, VariableStatement } from 'ts-morph';
 import pluralize from 'pluralize'
 import path from 'path'
 

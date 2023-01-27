@@ -1,7 +1,6 @@
-import { Collection, FindOptions as StdReadOptions} from '@mikro-orm/core';
-import { AutoPath } from '@mikro-orm/core/typings';
-import { RemoveNever } from './utility';
-import { RootEntity } from './utility';
+import type { Collection, FindOptions as StdReadOptions} from '@mikro-orm/core';
+import type { RemoveNever } from './utility';
+import type { RootEntity } from './utility';
 
 /** Additional options for rasmik */
 // export interface ReadOptions<T, P extends string = never> extends StdReadOptions<T,P> {

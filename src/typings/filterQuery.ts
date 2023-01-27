@@ -1,5 +1,5 @@
-import { ExpandProperty } from '@mikro-orm/core/typings';
-import { Dictionary,  ExpandScalar, Primary, Scalar } from './utility';
+import type { ExpandProperty } from '@mikro-orm/core/typings';
+import type { Dictionary,  ExpandScalar, Primary, Scalar } from './utility';
 
 
 export declare type FilterValue2<T> = T | ExpandScalar<T> | Primary<T>;

@@ -1,6 +1,6 @@
-import { EntityMetadata , EntityManager, wrap} from '@mikro-orm/core';
+import { EntityManager, wrap} from '@mikro-orm/core';
 import { CollectionHandler, SingletonHandler } from './handlers';
-import { NodeDef } from './nodeDef';
+import type { NodeDef } from './nodeDef';
 import {Utils} from './utils'
 
 export class Item {

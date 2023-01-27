@@ -1,13 +1,13 @@
-import { FilterQuery, Loaded, Reference, wrap, EntityManager, EntityClass, Primary } from '@mikro-orm/core'
-import { DeleteOptions,  PushData, PushDef, ReadOptions, RootEntity } from './typings'
+import type { FilterQuery, Loaded, Reference, wrap, EntityManager, EntityClass, Primary } from '@mikro-orm/core'
+import type { DeleteOptions,  PushData, PushDef, ReadOptions, RootEntity } from './typings'
 import { ReadService } from './crud/readService'
 import { DeleteService } from './crud/deleteService'
 import { PushService } from './crud/pushService'
 import { RasmikRouter } from './endpoints/router'
-import { Router } from 'express'
-import { ReadData, ReadLoaded } from './typings/readData'
-import { DraftData, DraftDef } from './typings/draft'
-import { PickData, PickDef } from './typings/pick'
+import type { Router } from 'express'
+import type { ReadData, ReadLoaded } from './typings/readData'
+import type { DraftData, DraftDef } from './typings/draft'
+import type { PickData, PickDef } from './typings/pick'
 
 interface RasmikServerConfig<S extends object> {
     services: S

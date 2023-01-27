@@ -49,6 +49,8 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "strictNullChecks": true,
+    "importsNotUsedAsValues": "error",
     "outDir": "dist",
     "rootDir": "./src"
   },

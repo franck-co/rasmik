@@ -1,5 +1,5 @@
 import { metadataStorage } from './metadata'
-import { CrudEndpointParams } from './types'
+import type { CrudEndpointParams } from './types'
 
 
 export function CrudEndpoint(settings:CrudEndpointParams = {}):ClassDecorator{

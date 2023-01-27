@@ -1,6 +1,6 @@
 import { Collection, EntityManager, wrap } from '@mikro-orm/core'
 import { Item } from './item'
-import { NodeDef } from './nodeDef'
+import type { NodeDef } from './nodeDef'
 
 
 abstract class Handler {

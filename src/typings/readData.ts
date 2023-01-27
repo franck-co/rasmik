@@ -1,8 +1,8 @@
-import { Collection, Loaded } from '@mikro-orm/core';
-import { ExpandProperty } from '@mikro-orm/core/typings';
-import { RemoveNever } from '.';
-import { ReadDefNode } from './readOptions';
-import { Primary, RootEntity, ScalarKey, RelationKey } from './utility'
+import type { Collection, Loaded } from '@mikro-orm/core';
+import type { ExpandProperty } from '@mikro-orm/core/typings';
+import type { RemoveNever } from '.';
+import type { ReadDefNode } from './readOptions';
+import type { Primary, RootEntity, ScalarKey, RelationKey } from './utility'
 
 
 

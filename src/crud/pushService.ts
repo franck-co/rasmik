@@ -1,7 +1,7 @@
 import { EntityManager, Reference, EntityClass, ServerException } from '@mikro-orm/core'
-import { RasmikServer } from '../rasmik'
+import type { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
-import { AnyPushDef } from '../typings'
+import type { AnyPushDef } from '../typings'
 import { PushRunner } from '../push-runner'
 import { RasmikDbError, RasmikError, RasmikValidationError } from '../errors'
 

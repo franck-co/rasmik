@@ -1,4 +1,4 @@
-import { EntityMetadata,EntityClass } from '@mikro-orm/core'
+import type { EntityMetadata,EntityClass } from '@mikro-orm/core'
 
 export class Helper {
 

@@ -1,5 +1,5 @@
-import { EntityClass, EntityMetadata } from '@mikro-orm/core'
-import { AllowOption, allowOptions, AnyPushDef, CollectionMode, collectionModes, PushDef, UnionToIntersection } from '../typings'
+import type { EntityClass, EntityMetadata } from '@mikro-orm/core'
+import { AllowOption, allowOptions, AnyPushDef, CollectionMode, collectionModes} from '../typings'
 
 export const nodeTypes = ['object' , 'pk' , 'objects','pks'] as const
 export type NodeType =  typeof nodeTypes[number]

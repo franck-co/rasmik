@@ -1,6 +1,5 @@
-import { EntityManager } from '@mikro-orm/core';
-import { RasmikServer } from '../rasmik';
-import { RasmikError } from '../errors';
+import type { EntityManager } from '@mikro-orm/core';
+import type { RasmikServer } from '../rasmik';
 
 
 export class CrudService {

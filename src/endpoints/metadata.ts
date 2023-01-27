@@ -1,6 +1,6 @@
-import { EntityClass } from '@mikro-orm/core';
+import type { EntityClass } from '@mikro-orm/core';
 import pluralize from 'pluralize';
-import { CrudEndpointDef, CrudEndpointParams, Middleware } from './types';
+import type { CrudEndpointDef, CrudEndpointParams, Middleware } from './types';
 
 
 class MetadataStorage {

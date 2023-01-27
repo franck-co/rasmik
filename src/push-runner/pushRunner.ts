@@ -1,5 +1,5 @@
-import { EntityClass, EntityManager, wrap } from '@mikro-orm/core';
-import { AnyPushDef, PushDef } from '../typings';
+import type { EntityClass, EntityManager, wrap } from '@mikro-orm/core';
+import type { AnyPushDef, PushDef } from '../typings';
 import { CollectionHandler, SingletonHandler } from './handlers';
 import { NodeDef } from './nodeDef';
 

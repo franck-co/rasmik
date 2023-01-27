@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response, Router } from 'express'
-import { RasmikServer } from '../rasmik'
+import type { NextFunction, Request, Response, Router } from 'express'
+import type { RasmikServer } from '../rasmik'
 import { metadataStorage } from './metadata'
-import { CrudEndpointDef, CrudRequestType } from './types'
+import type { CrudEndpointDef, CrudRequestType } from './types'
 
 
 export class RasmikRouter {

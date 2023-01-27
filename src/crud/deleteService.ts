@@ -1,8 +1,8 @@
 import { EntityManager, FilterQuery ,EntityClass, ServerException} from '@mikro-orm/core'
-import { RasmikServer } from '../rasmik'
+import type { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
 import { Helper } from '../helper'
-import { DeleteOptions } from '../typings'
+import type { DeleteOptions } from '../typings'
 import { RasmikDbError, RasmikError, RasmikValidationError } from '..'
 
 export class DeleteService  extends CrudService {

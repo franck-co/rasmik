@@ -1,5 +1,5 @@
-import { AnyEntity, EntityClass, EntityMetadata } from '@mikro-orm/core';
-import { ReadOptions , RootEntity} from '../typings';
+import type { AnyEntity, EntityClass, EntityMetadata } from '@mikro-orm/core';
+import type { ReadOptions , RootEntity} from '../typings';
 
 export class ReadOptionsHandler {
 

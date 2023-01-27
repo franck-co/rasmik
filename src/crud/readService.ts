@@ -1,8 +1,8 @@
 import { EntityManager, FilterQuery,EntityClass, ServerException, wrap } from '@mikro-orm/core'
-import { RasmikServer } from '../rasmik'
+import type { RasmikServer } from '../rasmik'
 import { CrudService } from './crudService'
 import { Helper } from '../helper'
-import { AnyPushDef, ReadOptions } from '../typings'
+import type { AnyPushDef, ReadOptions } from '../typings'
 import { RasmikDbError, RasmikError, RasmikValidationError } from '../errors'
 import { ReadOptionsHandler } from './readOptionsHandler'
 

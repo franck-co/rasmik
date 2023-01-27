@@ -1,4 +1,4 @@
-import { ExpandProperty } from '@mikro-orm/core/typings';
+import type { ExpandProperty } from '@mikro-orm/core/typings';
 import {PrimaryKeyType} from '@mikro-orm/core'
 export const EntitySymbol: unique symbol = Symbol()
 export class RootEntity {private [EntitySymbol]?:any}

@@ -1,5 +1,5 @@
-import { EntityClass } from '@mikro-orm/core';
-import { NextFunction, Request, Response } from 'express';
+import type { EntityClass } from '@mikro-orm/core';
+import type { NextFunction, Request, Response } from 'express';
 
 export interface CrudEndpointParams {
     path?:string, 

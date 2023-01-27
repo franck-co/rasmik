@@ -1,5 +1,5 @@
-import {  HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
-import { ExpandProperty } from '@mikro-orm/core/typings'
+import type {  HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
+import type { ExpandProperty } from '@mikro-orm/core/typings'
 
 
 

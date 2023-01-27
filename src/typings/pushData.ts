@@ -1,7 +1,7 @@
-import {  HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
-import { AllowOption, PushDefNodeObject, PushDefNodeObjects, PushDefNodePk, PushDefNodePks, PushDef,PushDefNode } from './pushDef'
-import { ExpandProperty } from '@mikro-orm/core/typings'
-import { Collection } from '@mikro-orm/core'
+import type {  HasCompositePk, PkKeys, Primary, RootEntity, ScalarKey, RelationKey } from './utility'
+import type { AllowOption, PushDefNodeObject, PushDefNodeObjects, PushDefNodePk, PushDefNodePks, PushDef,PushDefNode } from './pushDef'
+import type { ExpandProperty } from '@mikro-orm/core/typings'
+import type { Collection } from '@mikro-orm/core'
 
 export type PushData<E extends RootEntity, Def extends PushDefNode<E>, Col = {}> 
 = Col extends Collection<any> ?  Array<PushDataItem<E,Def>> : PushDataItem<E,Def>

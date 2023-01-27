@@ -1,6 +1,6 @@
 
-import { Collection } from '@mikro-orm/core';
-import { EntityField, RootEntity, UnionToIntersection, RemoveNever } from './utility';
+import type { Collection } from '@mikro-orm/core';
+import type { EntityField, RootEntity, UnionToIntersection, RemoveNever } from './utility';
 
 
 
