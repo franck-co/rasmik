@@ -86,7 +86,7 @@ export class RasmikRouter {
                     const em = this.rasmik.em.fork()
 
                     //modifiy data
-                    const nextIdentifiers = await this.rasmik.pushOne(def.EntityClass).pushDef(qry.pushDef).data(qry.data).run(em)
+                    const nextIdentifiers = await this.rasmik.pushMany(def.EntityClass).pushDef(qry.pushDef).data(qry.data).run(em)
 
                     //Reset the identity map so entities will be queried fully
                     em.clear()
