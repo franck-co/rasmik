@@ -359,15 +359,25 @@ All the types are included.\n`)
 
         const firstOrder = classes[0]?.getChildIndex()
 
+        let tries = 0, previousCLS = null
         while (queue.length) {
 
             for (let queueIndex = 0; queueIndex < queue.length; queueIndex++) {
 
                 const cls = queue[queueIndex]
+                this.display('Reordering classes  ' + (queueIndex + 1) + '/' + queue.length + ' ('+ cls.getName() +')');
+
+                if(cls === previousCLS){
+                    tries ++
+                }else{
+                    tries = 0
+                    previousCLS = cls
+                }
+
                 const extendsName = cls.getExtends()?.getText()
 
                 //Standalone classes go first
-                if ((!extendsName) || extendsName === 'RootEntity') {
+                if ((!extendsName) || extendsName === 'RootEntity' || tries >= 10) {
                     orderedClasses.unshift(cls)
                     queue.splice(queueIndex, 1)
                     continue
