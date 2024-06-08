@@ -281,7 +281,7 @@ All the types are included.\n`)
 
 
                     //remove types that are resolved to an external package sush as typescript lib itself
-                    const declarations = definitionNodes.filter(dcl => !(dcl.getSourceFile().getFilePath().startsWith('/node_modules') || dcl.getSourceFile().getFilePath().startsWith(process.cwd() + '/node_modules'))).map(dcl => Node.isVariableDeclaration(dcl) ? dcl.getParent().getParent() : dcl)
+                    const declarations = definitionNodes.filter(dcl => !(dcl.getSourceFile().getFilePath().includes('/node_modules/'))).map(dcl => Node.isVariableDeclaration(dcl) ? dcl.getParent().getParent() : dcl)
 
                     for (const dcl of declarations) {
 
